@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="pageTitleAutos">Alquiler SantaLucía - Carros de Renta</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/autos.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2: alertas y confirmaciones atractivas -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#DC2626',
+                        'brand-dark': '#B91C1C'
+                    },
+                    screens: {
+                        xs: '420px'
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body>
+
+    <!-- Header y navegación -->
+    <header class="header">
+        <nav class="navbar w-full max-w-[1500px] mx-auto px-5 lg:px-10">
+
+            <!-- Logo -->
+            <a href="index.html" class="logo-link">
+                <div class="logo">
+                    <span class="logo-oto">SANTA</span>
+                    <span class="logo-q">LUCÍA</span>
+                    <span class="logo-sub" data-i18n="logoSub">ALQUILER</span>
+                </div>
+            </a>
+
+            <!-- Menú -->
+            <div class="nav-right">
+
+                <!-- Enlaces principales -->
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link" data-i18n="home">Inicio</a></li>
+                    <li><a href="autos.html" class="nav-link" aria-current="page" data-i18n="ourFleet">Nuestra Flota</a></li>
+                    <li><a href="dashboard.html" class="nav-link">Panel de control</a></li>
+                    <li><a href="reportes.html" class="nav-link">Reportes</a></li>
+                </ul>
+
+                <!-- Botón Mi Cuenta (destacado) — visible solo si NO hay sesión -->
+                <a href="login-registro.html" class="account-btn" id="accountBtn" data-i18n="myAccount">
+                    <i class="fas fa-user account-btn-icon"></i>
+                    <span>Mi Cuenta</span>
+                </a>
+
+                <!-- Perfil usuario (visible solo SI hay sesión) -->
+                <div class="profile-container" id="profileContainer" style="display:none;">
+                    <button type="button" class="profile-toggle" id="profileToggle" aria-haspopup="true" aria-expanded="false">
+                        <div class="profile-avatar" id="profileAvatarHeader">
+                            <i class="fas fa-user default-avatar-icon"></i>
+                        </div>
+                        <span class="profile-username-badge" id="profileUsernameBadge">Usuario</span>
+                    </button>
+
+                    <div class="profile-dropdown" id="profileDropdown" role="menu">
+                        <div class="profile-dropdown-header">
+                            <div class="profile-avatar profile-avatar-large" id="profileAvatarDropdown">
+                                <i class="fas fa-user default-avatar-icon"></i>
+                            </div>
+                            <div class="profile-dropdown-userinfo">
+                                <div class="profile-dropdown-username" id="profileDropdownUsername">Usuario</div>
+                                <button type="button" class="profile-edit-link" id="editProfileBtn">Editar perfil</button>
+                            </div>
+                        </div>
+                        <hr class="profile-divider">
+                        <ul class="profile-menu">
+                            <li class="profile-menu-item" role="menuitem" data-action="profile">
+                                <i class="fas fa-user profile-menu-icon"></i>
+                                <span>Mi perfil</span>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-action="notifications">
+                                <i class="fas fa-bell profile-menu-icon"></i>
+                                <span>Notificaciones</span>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-action="saved">
+                                <i class="fas fa-bookmark profile-menu-icon"></i>
+                                <span>Guardado</span>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-action="history">
+                                <i class="fas fa-history profile-menu-icon"></i>
+                                <span>Historial</span>
+                            </li>
+                        </ul>
+                        <hr class="profile-divider">
+                        <!-- Selector de idioma (movido desde la barra de navegación) -->
+                        <ul class="profile-menu">
+                            <li class="profile-menu-item" role="menuitem" data-lang="es">
+                                <i class="fas fa-globe profile-menu-icon"></i>
+                                <span>Español</span>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-lang="en">
+                                <i class="fas fa-globe profile-menu-icon"></i>
+                                <span>English</span>
+                            </li>
+                        </ul>
+                        <hr class="profile-divider">
+                        <button type="button" class="profile-menu-item profile-logout-item" id="logoutBtn" role="menuitem">
+                            <span>Salir</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal de edición de perfil -->
+                <div class="profile-modal-overlay" id="profileModalOverlay" style="display:none;">
+                    <div class="profile-modal" id="profileModal">
+                        <button type="button" class="profile-modal-close" id="closeProfileModal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <h3 class="profile-modal-title">Editar perfil</h3>
+
+                        <div class="profile-avatar-upload">
+                            <div class="profile-avatar profile-avatar-xl" id="profileAvatarEdit">
+                                <i class="fas fa-user default-avatar-icon"></i>
+                            </div>
+                            <label class="profile-upload-btn" for="avatarInput">
+                                <i class="fas fa-camera"></i>
+                                <span>Cambiar foto</span>
+                            </label>
+                            <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+                        </div>
+
+                        <form id="editProfileForm" class="profile-form">
+                            <div class="profile-form-group">
+                                <label for="editName" class="profile-form-label">Nombre completo</label>
+                                <input type="text" id="editName" class="profile-form-input" placeholder="Tu nombre">
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="editEmail" class="profile-form-label">Correo electrónico</label>
+                                <input type="email" id="editEmail" class="profile-form-input" placeholder="tucorreo@ejemplo.com" readonly>
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="editPhone" class="profile-form-label">Teléfono</label>
+                                <input type="tel" id="editPhone" class="profile-form-input" placeholder="0000000000">
+                            </div>
+                            <button type="submit" class="profile-save-btn">Guardar cambios</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Botón menú móvil -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Abrir menú" aria-expanded="false">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+
+            </div>
+        </nav>
+    </header>
+
+    <!-- Menú móvil -->
+    <div class="mobile-menu" id="mobileMenu">
+        <!-- Enlaces móvil -->
+        <ul class="mobile-nav-menu">
+            <li><a href="index.html" class="mobile-nav-link" data-i18n="home">Inicio</a></li>
+            <li><a href="autos.html" class="mobile-nav-link" aria-current="page" data-i18n="ourFleet">Nuestra Flota</a></li>
+            <li><a href="dashboard.html" class="mobile-nav-link">Panel de control</a></li>
+            <li><a href="reportes.html" class="mobile-nav-link">Reportes</a></li>
+            <li><a href="login-registro.html" class="mobile-nav-link mobile-nav-link-accent" data-i18n="myAccount">Mi Cuenta</a></li>
+        </ul>
+    </div>
+
+    <!-- Hero / Banner de la página de carros -->
+    <section class="hero">
+
+        <!-- Slide único para esta página -->
+        <div class="carousel-track">
+            <div class="hero-slide active">
+                <img src="fotos/KIA1.jpg"
+                     alt="Flota de carros de renta"
+                     class="hero-image"
+                     loading="eager">
+            </div>
+        </div>
+
+        <!-- Overlay oscuro -->
+        <div class="hero-overlay"></div>
+
+        <!-- Buscador elegante en medio -->
+        <div class="hero-content hero-search-container">
+            <span class="hero-subtitle" data-i18n="rentalCars">CARROS DE RENTA</span>
+            <h1 class="hero-title hero-search-title" data-i18n="searchYourCar">BUSCA TU VEHÍCULO</h1>
+
+            <form class="hero-search-form" id="heroSearchForm" onsubmit="return false;">
+                <div class="search-field-group">
+                    <div class="search-field">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text"
+                               id="heroSearchInput"
+                               class="search-input"
+                               data-i18n-placeholder="searchPlaceholder"
+                               placeholder="Buscar carro, marca, modelo..."
+                               autocomplete="off">
+                    </div>
+                    <button type="submit" class="search-btn" data-i18n="searchBtn">
+                        <i class="fas fa-magnifying-glass search-btn-icon"></i>
+                        <span data-i18n="searchBtnText">BUSCAR</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </section>
+
+    <!-- Widget flotante derecho DESPLEGABLE -->
+    <aside class="floating-widget" id="floatingWidget">
+        <div class="widget-panel">
+            <a href="#" class="widget-item" title="Refrescar">
+                <i class="fas fa-sync-alt"></i>
+            </a>
+            <a href="#" class="widget-item" title="WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://www.tiktok.com/@alquilersantalucia?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" class="widget-item" title="TikTok">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="#" class="widget-item" title="Teléfono">
+                <i class="fas fa-phone"></i>
+            </a>
+        </div>
+        <button class="widget-toggle" id="widgetToggle" aria-label="Abrir menú">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </aside>
+
+    <!-- ========== NUEVA SECCIÓN: RENTA DE CARROS CON SIDEBAR + GRID ========== -->
+
+    <!-- Título principal + botón reserva -->
+    <section class="rental-header-section w-full max-w-[1500px] mx-auto px-5 lg:px-10">
+        <div class="rental-header-container flex flex-col items-start gap-4 sm:gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <h1 class="rental-main-title" data-i18n="rentalOptionsTitle">
+                Opciones de alquiler de autos
+            </h1>
+            <button class="rental-reserve-btn" id="mainReserveBtn" data-i18n="makeReservation">
+                Realizar una reserva
+            </button>
+        </div>
+    </section>
+
+    <!-- Layout: Sidebar filtros + Contenido categorías -->
+    <section class="rental-layout-section w-full max-w-[1500px] mx-auto px-5 lg:px-10">
+        <div class="rental-layout-container grid grid-cols-1 gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-9">
+
+            <!-- ========== SIDEBAR DE FILTROS ========== -->
+            <aside class="rental-sidebar">
+                <div class="sidebar-inner">
+
+                    <!-- Encabezado del panel de filtros -->
+                    <div class="sidebar-header">
+                        <h2 class="sidebar-title">
+                            <span class="sidebar-title-icon"><i class="fas fa-sliders-h"></i></span>
+                            <span data-i18n="filters">Filtros</span>
+                        </h2>
+                    </div>
+                    <div class="sidebar-divider"></div>
+
+                    <!-- Filtro: Tipo de vehículo -->
+                    <div class="filter-group">
+                        <h3 class="filter-group-title">
+                            <i class="fas fa-car-side filter-group-icon"></i>
+                            <span data-i18n="vehicleType">Tipo de vehículo</span>
+                        </h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" class="filter-checkbox" value="autos" checked>
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label" data-i18n="cars">Autos</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" class="filter-checkbox" value="camiones">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label" data-i18n="trucks">Camiones</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" class="filter-checkbox" value="vans">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label" data-i18n="vans">Vans</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" class="filter-checkbox" value="suv">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label" data-i18n="suvFull">Vehículos utilitarios deportivos (SUV)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filtro: Pasajeros (opciones tipo chip) -->
+                    <div class="filter-group">
+                        <h3 class="filter-group-title">
+                            <i class="fas fa-users filter-group-icon"></i>
+                            <span data-i18n="passengers">Pasajeros</span>
+                        </h3>
+                        <div class="filter-options filter-options-chips">
+                            <label class="filter-option filter-chip">
+                                <input type="checkbox" class="filter-checkbox" value="p2">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label">2+</span>
+                            </label>
+                            <label class="filter-option filter-chip">
+                                <input type="checkbox" class="filter-checkbox" value="p3">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label">3+</span>
+                            </label>
+                            <label class="filter-option filter-chip">
+                                <input type="checkbox" class="filter-checkbox" value="p4">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label">4+</span>
+                            </label>
+                            <label class="filter-option filter-chip">
+                                <input type="checkbox" class="filter-checkbox" value="p5">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label">5+</span>
+                            </label>
+                            <label class="filter-option filter-chip">
+                                <input type="checkbox" class="filter-checkbox" value="p7">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label">7+</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filtro: Transmisión (control segmentado) -->
+                    <div class="filter-group">
+                        <h3 class="filter-group-title">
+                            <i class="fas fa-cog filter-group-icon"></i>
+                            <span data-i18n="transmission">Transmisión</span>
+                        </h3>
+                        <div class="filter-options filter-options-segment">
+                            <label class="filter-option filter-segment">
+                                <input type="checkbox" class="filter-checkbox" value="automatica">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label" data-i18n="automatic">Automática</span>
+                            </label>
+                            <label class="filter-option filter-segment">
+                                <input type="checkbox" class="filter-checkbox" value="manual">
+                                <span class="filter-checkmark"></span>
+                                <span class="filter-label" data-i18n="manual">Manual</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filtro: Rango de precios -->
+                    <div class="filter-group">
+                        <h3 class="filter-group-title">
+                            <i class="fas fa-dollar-sign filter-group-icon"></i>
+                            <span data-i18n="priceRange">Rango de precios</span>
+                        </h3>
+                        <div class="price-inputs">
+                            <div class="price-input-wrap">
+                                <span class="price-currency">$</span>
+                                <input type="number" class="price-input" id="priceMinInput" placeholder="Min" min="0" value="0">
+                            </div>
+                            <span class="price-separator">—</span>
+                            <div class="price-input-wrap">
+                                <span class="price-currency">$</span>
+                                <input type="number" class="price-input" id="priceMaxInput" placeholder="Max" min="0" value="500">
+                            </div>
+                        </div>
+                        <div id="priceFilterError" class="price-filter-error">El precio mínimo no puede ser mayor que el máximo.</div>
+                    </div>
+
+                </div>
+            </aside>
+
+            <!-- ========== CONTENIDO PRINCIPAL: CATEGORÍAS ========== -->
+            <div class="rental-main-content">
+
+                <!-- Barra superior: opciones + país -->
+                <div class="rental-top-bar">
+                    <div class="rental-options-count">
+                        <h2 class="rental-options-title" id="rentalOptionsCount" data-i18n="vehicleCategoryOptions">
+                            8 opciones de categoría de vehículo disponibles
+                        </h2>
+                    </div>
+                    <div class="rental-country-select">
+                        <i class="fas fa-map-marker-alt country-icon"></i>
+                        <span class="country-label" data-i18n="country">PAÍS:</span>
+                        <button class="country-select-btn">
+                            <span class="country-name" data-i18n="countryName">ESPAÑA</span>
+                            <i class="fas fa-chevron-down country-chevron"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="rental-divider"></div>
+
+                <!-- Categoría expandible: Autos -->
+                <div class="rental-category-group">
+                    <button class="rental-category-toggle">
+                        <span class="category-toggle-name" data-i18n="carsCategory">Nuestra Flota</span>
+                        <span class="category-toggle-count" id="categoryGroupCount">(8)</span>
+                        <i class="fas fa-chevron-down category-toggle-arrow"></i>
+                    </button>
+
+                    <!-- Grid dinámico de tarjetas de categoría -->
+                    <div class="rental-categories-grid grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 lg:gap-6" id="rentalCategoriesGrid">
+
+                        <!-- Tarjeta 1: Compacto -->
+                        <article class="rent-category-card">
+                            <h3 class="cat-card-title" data-i18n="catCompact">Compacto</h3>
+                            <p class="cat-card-example" data-i18n="catCompactExample">Nissan Versa o similar</p>
+
+                            <div class="cat-card-specs">
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-cog cat-spec-icon"></i>
+                                    <span class="cat-spec-text" data-i18n="automatic">Automática</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-users cat-spec-icon"></i>
+                                    <span class="cat-spec-text">5</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-suitcase cat-spec-icon"></i>
+                                    <span class="cat-spec-text">2</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-car cat-spec-icon"></i>
+                                    <span class="cat-spec-text">2-4</span>
+                                </div>
+                            </div>
+
+                            <div class="cat-card-image-wrap">
+                                  <img src="fotos/1.jpg"
+                                     alt="Compacto"
+                                     class="cat-card-image"
+                                     loading="lazy">
+                            </div>
+
+                            <button class="cat-card-details-btn" data-i18n="viewDetails">
+                                Ver detalles <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </article>
+
+                        <!-- Tarjeta 2: Descapotable compacto -->
+                        <article class="rent-category-card">
+                            <h3 class="cat-card-title" data-i18n="catConvertible">Descapotable compacto</h3>
+                            <p class="cat-card-example" data-i18n="catConvertibleExample">Mazda Miata RF o similar</p>
+
+                            <div class="cat-card-specs">
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-cog cat-spec-icon"></i>
+                                    <span class="cat-spec-text" data-i18n="automatic">Automática</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-users cat-spec-icon"></i>
+                                    <span class="cat-spec-text">2</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-suitcase cat-spec-icon"></i>
+                                    <span class="cat-spec-text">1</span>
+                                </div>
+                            </div>
+
+                            <div class="cat-card-image-wrap">
+                                  <img src="fotos/2.jpg"
+                                     alt="Descapotable"
+                                     class="cat-card-image"
+                                     loading="lazy">
+                            </div>
+
+                            <button class="cat-card-details-btn" data-i18n="viewDetails">
+                                Ver detalles <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </article>
+
+                        <!-- Tarjeta 3: Compacto especial -->
+                        <article class="rent-category-card">
+                            <h3 class="cat-card-title" data-i18n="catSpecialCompact">Compacto especial</h3>
+                            <p class="cat-card-example" data-i18n="catSpecialCompactExample">Fiat 500 o similar</p>
+
+                            <div class="cat-card-specs">
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-cog cat-spec-icon"></i>
+                                    <span class="cat-spec-text" data-i18n="automatic">Automática</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-users cat-spec-icon"></i>
+                                    <span class="cat-spec-text">4</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-suitcase cat-spec-icon"></i>
+                                    <span class="cat-spec-text">2</span>
+                                </div>
+                            </div>
+
+                            <div class="cat-card-image-wrap">
+                                <img src="fotos/3.jpg"
+                                     alt="Compacto especial"
+                                     class="cat-card-image"
+                                     loading="lazy">
+                            </div>
+
+                            <button class="cat-card-details-btn" data-i18n="viewDetails">
+                                Ver detalles <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </article>
+
+                        <!-- Tarjeta 4: Económico -->
+                        <article class="rent-category-card">
+                            <h3 class="cat-card-title" data-i18n="catEconomy">Económico</h3>
+                            <p class="cat-card-example" data-i18n="catEconomyExample">Hyundai i10 o similar</p>
+
+                            <div class="cat-card-specs">
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-cog cat-spec-icon"></i>
+                                    <span class="cat-spec-text" data-i18n="manual">Manual</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-users cat-spec-icon"></i>
+                                    <span class="cat-spec-text">4</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-suitcase cat-spec-icon"></i>
+                                    <span class="cat-spec-text">1</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-snowflake cat-spec-icon"></i>
+                                    <span class="cat-spec-text">A/C</span>
+                                </div>
+                            </div>
+
+                            <div class="cat-card-image-wrap">
+                                  <img src="fotos/4.jpg"
+                                     alt="Económico"
+                                     class="cat-card-image"
+                                     loading="lazy">
+                            </div>
+
+                            <button class="cat-card-details-btn" data-i18n="viewDetails">
+                                Ver detalles <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </article>
+
+                        <!-- Tarjeta 5: SUV Mediano -->
+                        <article class="rent-category-card">
+                            <h3 class="cat-card-title" data-i18n="catMidsizeSUV">SUV Mediano</h3>
+                            <p class="cat-card-example" data-i18n="catMidsizeSUVExample">Kia Sportage o similar</p>
+
+                            <div class="cat-card-specs">
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-cog cat-spec-icon"></i>
+                                    <span class="cat-spec-text" data-i18n="automatic">Automática</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-users cat-spec-icon"></i>
+                                    <span class="cat-spec-text">5</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-suitcase cat-spec-icon"></i>
+                                    <span class="cat-spec-text">4</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-snowflake cat-spec-icon"></i>
+                                    <span class="cat-spec-text">A/C</span>
+                                </div>
+                            </div>
+
+                            <div class="cat-card-image-wrap">
+                                  <img src="fotos/KIA1.jpg"
+                                     alt="SUV Mediano"
+                                     class="cat-card-image"
+                                     loading="lazy">
+                            </div>
+
+                            <button class="cat-card-details-btn" data-i18n="viewDetails">
+                                Ver detalles <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </article>
+
+                        <!-- Tarjeta 6: Lujo -->
+                        <article class="rent-category-card">
+                            <h3 class="cat-card-title" data-i18n="catLuxuryCategory">Lujo</h3>
+                            <p class="cat-card-example" data-i18n="catLuxuryExample">BMW Serie 3 o similar</p>
+
+                            <div class="cat-card-specs">
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-cog cat-spec-icon"></i>
+                                    <span class="cat-spec-text" data-i18n="automatic">Automática</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-users cat-spec-icon"></i>
+                                    <span class="cat-spec-text">5</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-suitcase cat-spec-icon"></i>
+                                    <span class="cat-spec-text">3</span>
+                                </div>
+                                <div class="cat-spec-item">
+                                    <i class="fas fa-snowflake cat-spec-icon"></i>
+                                    <span class="cat-spec-text">A/C</span>
+                                </div>
+                            </div>
+
+                            <div class="cat-card-image-wrap">
+                                  <img src="fotos/KIA2.jpg"
+                                     alt="Lujo"
+                                     class="cat-card-image"
+                                     loading="lazy">
+                            </div>
+
+                            <button class="cat-card-details-btn" data-i18n="viewDetails">
+                                Ver detalles <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </article>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="fleet-details-overlay" id="fleetDetailsOverlay" aria-hidden="true">
+        <article class="fleet-details-modal" role="dialog" aria-modal="true" aria-labelledby="fleetDetailsTitle">
+            <button type="button" class="fleet-details-close" id="fleetDetailsClose" aria-label="Cerrar detalles">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="fleet-details-image-wrap">
+                <img id="fleetDetailsImage" class="fleet-details-image" src="" alt="">
+            </div>
+            <div class="fleet-details-content">
+                <span class="fleet-details-eyebrow">Detalles del vehículo</span>
+                <h2 id="fleetDetailsTitle" class="fleet-details-title"></h2>
+                <p id="fleetDetailsExample" class="fleet-details-example"></p>
+                <ul id="fleetDetailsSpecs" class="fleet-details-specs"></ul>
+                <button type="button" class="fleet-details-action" id="fleetDetailsReserveBtn">
+                    <i class="fas fa-calendar-check"></i>
+                    Realizar una reserva
+                </button>
+            </div>
+        </article>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL DE REALIZAR UNA RESERVA (Requisitos 3 y 11) -->
+    <!-- ============================================== -->
+    <div class="reservation-modal-overlay" id="reservationModalOverlay" style="display:none;" aria-hidden="true">
+        <div class="reservation-modal-dialog">
+            <button type="button" class="reservation-modal-close" id="closeReservationModal" aria-label="Cerrar modal">&times;</button>
+            <div class="reservation-modal-header">
+                <span class="reservation-modal-tag"><i class="fas fa-car-side"></i> Santa Lucía Alquiler</span>
+                <h2 class="reservation-modal-title">Realizar una Reserva</h2>
+                <p class="reservation-modal-sub">Completa los datos para confirmar tu vehículo con tarifa garantizada y disponibilidad inmediata.</p>
+            </div>
+
+            <form id="publicReservationForm" class="reservation-form" novalidate>
+                <!-- Selección de Vehículo -->
+                <div class="res-form-group">
+                    <label for="resVehicleSelect" class="res-form-label">Vehículo seleccionado *</label>
+                    <select id="resVehicleSelect" class="res-form-select" required>
+                        <!-- Cargado dinámicamente -->
+                    </select>
+                </div>
+
+                <!-- Fechas de recogida y devolución -->
+                <div class="res-form-row">
+                    <div class="res-form-group">
+                        <label for="resStartDate" class="res-form-label">Fecha de recogida *</label>
+                        <input type="date" id="resStartDate" class="res-form-input" required>
+                    </div>
+                    <div class="res-form-group">
+                        <label for="resEndDate" class="res-form-label">Fecha de devolución *</label>
+                        <input type="date" id="resEndDate" class="res-form-input" required>
+                    </div>
+                </div>
+
+                <!-- Lugar de entrega -->
+                <div class="res-form-group">
+                    <label for="resLocation" class="res-form-label">Lugar de recogida / entrega</label>
+                    <select id="resLocation" class="res-form-select">
+                        <option value="Madrid Centro - Oficina Principal">Madrid Centro - Oficina Principal (Av. Principal 123)</option>
+                        <option value="Aeropuerto Madrid-Barajas T4">Aeropuerto Madrid-Barajas Adolfo Suárez T4</option>
+                        <option value="Estación Madrid Atocha">Estación de Tren Madrid-Atocha</option>
+                        <option value="Barcelona Sants">Barcelona - Estación de Sants</option>
+                    </select>
+                </div>
+
+                <!-- Servicios Extras -->
+                <div class="res-form-group">
+                    <label class="res-form-label">Servicios adicionales opcionales</label>
+                    <div class="res-extras-grid">
+                        <label class="res-extra-item">
+                            <input type="checkbox" id="extraInsurance" value="15" class="res-extra-check">
+                            <span>Seguro Todo Riesgo (+15$/día)</span>
+                        </label>
+                        <label class="res-extra-item">
+                            <input type="checkbox" id="extraGps" value="5" class="res-extra-check">
+                            <span>Navegador GPS (+5$/día)</span>
+                        </label>
+                        <label class="res-extra-item">
+                            <input type="checkbox" id="extraChildSeat" value="8" class="res-extra-check">
+                            <span>Silla de Bebé (+8$/día)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Desglose de Precios en tiempo real -->
+                <div class="res-summary-box">
+                    <div class="res-summary-row">
+                        <span>Días calculados:</span>
+                        <strong id="summaryDays">3 días</strong>
+                    </div>
+                    <div class="res-summary-row">
+                        <span>Tarifa base por día:</span>
+                        <span id="summaryRate">$35.00 / día</span>
+                    </div>
+                    <div class="res-summary-row">
+                        <span>Extras seleccionados:</span>
+                        <span id="summaryExtras">$0.00 / día</span>
+                    </div>
+                    <div class="res-summary-divider"></div>
+                    <div class="res-summary-row res-summary-total">
+                        <span>TOTAL ESTIMADO:</span>
+                        <strong id="summaryTotal">$105.00</strong>
+                    </div>
+                </div>
+
+                <div class="res-form-actions">
+                    <button type="button" class="res-btn-cancel" id="cancelReservationModalBtn">Cancelar</button>
+                    <button type="submit" class="res-btn-confirm" id="confirmReservationBtn">
+                        <i class="fas fa-calendar-check"></i> Confirmar Reserva
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Información General (Oficinas, Empresa, etc.) -->
+    <div class="info-modal-overlay" id="infoModalOverlay" style="display:none;" aria-hidden="true">
+        <div class="info-modal-dialog">
+            <button type="button" class="info-modal-close" id="closeInfoModal" aria-label="Cerrar">&times;</button>
+            <h3 class="reservation-modal-title" id="infoModalTitle">Información</h3>
+            <div id="infoModalContent" class="text-sm text-gray-300 space-y-3 leading-relaxed mt-4"></div>
+            <div class="res-form-actions mt-6">
+                <button type="button" class="res-btn-confirm" id="closeInfoModalBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER / PIE DE PÁGINA ========== -->
+    <footer class="footer">
+        <div class="footer-container">
+
+            <!-- Columna 1: Empresa -->
+            <div class="footer-col footer-brand">
+                <div class="logo footer-logo">
+                    <span class="logo-oto">SANTA</span>
+                    <span class="logo-q">LUCÍA</span>
+                    <span class="logo-sub" data-i18n="logoSub">ALQUILER</span>
+                </div>
+                <p class="footer-tagline" data-i18n="footerTagline">Alquiler de vehículos con la mejor flota y atención personalizada. Muévete con libertad, estilo y confianza.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-link" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@alquilersantalucia?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="social-link" title="X"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-link" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <!-- Columna 2: Enlaces rápidos -->
+            <div class="footer-col">
+                <h4 class="footer-title" data-i18n="footerQuickLinks">Enlaces Rápidos</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html" data-i18n="home">Inicio</a></li>
+                    <li><a href="autos.html" data-i18n="ourFleet">Nuestra Flota</a></li>
+                    <li><a href="#" data-i18n="offices">Oficinas</a></li>
+                    <li><a href="#" data-i18n="whoWeAre">Quiénes Somos</a></li>
+                    <li><a href="#" data-i18n="ourTeam">Nuestro Equipo</a></li>
+                    <li><a href="#" data-i18n="footerOffers">Ofertas</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 3: Servicios -->
+            <div class="footer-col">
+                <h4 class="footer-title" data-i18n="footerServices">Servicios</h4>
+                <ul class="footer-links">
+                    <li><a href="#" data-i18n="footerLongTerm">Alquiler Largo Plazo</a></li>
+                    <li><a href="#" data-i18n="footerCorporate">Corporativos</a></li>
+                    <li><a href="#" data-i18n="footerDelivery">Entrega a Domicilio</a></li>
+                    <li><a href="#" data-i18n="footerAirport">Recogida Aeropuerto</a></li>
+                    <li><a href="#" data-i18n="footerInsurance">Seguros</a></li>
+                    <li><a href="#" data-i18n="footerAssistance">Asistencia 24/7</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 4: Contacto -->
+            <div class="footer-col footer-contact">
+                <h4 class="footer-title" data-i18n="footerContact">Contacto</h4>
+                <ul class="contact-list">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span data-i18n="footerAddress">Av. Principal 123, Centro, Madrid, España</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:+34900123456">+34 900 123 456</a>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:info@santalucia.com">info@santalucia.com</a>
+                    </li>
+                    <li>
+                        <i class="far fa-clock"></i>
+                        <span data-i18n="footerSchedule">Lun-Sáb: 08:00 - 20:00</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Franja inferior: Legal + Copyright -->
+        <div class="footer-bottom">
+            <div class="footer-container footer-bottom-inner">
+                <p class="footer-copy">&copy; <span id="year"></span> <span data-i18n="footerCopy">SantaLucía Alquiler. Todos los derechos reservados.</span></p>
+                <ul class="footer-legal">
+                    <li><a href="#" data-i18n="footerPrivacy">Privacidad</a></li>
+                    <li><a href="#" data-i18n="footerTerms">Términos y Condiciones</a></li>
+                    <li><a href="#" data-i18n="footerCookies">Política de Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app-data.js"></script>
+    <script src="js/script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de control - SantaLucía Alquiler</title>
+    <!-- Framework CSS Tailwind para diseño responsive consistente -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/dashboard-tailwind-config.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/autos.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2: alertas y confirmaciones atractivas -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="bg-black text-gray-200 min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="header">
+        <nav class="navbar w-full max-w-[1500px] mx-auto px-5 lg:px-10">
+            <a href="index.html" class="logo-link">
+                <div class="logo">
+                    <span class="logo-oto">SANTA</span>
+                    <span class="logo-q">LUCÍA</span>
+                    <span class="logo-sub">ALQUILER</span>
+                </div>
+            </a>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Inicio</a></li>
+                    <li><a href="autos.html" class="nav-link">Nuestra Flota</a></li>
+                    <li><a href="dashboard.html" class="nav-link" aria-current="page">Panel de control</a></li>
+                    <li><a href="reportes.html" class="nav-link">Reportes</a></li>
+                </ul>
+                <div class="profile-container dashboard-profile" id="profileContainer">
+                    <button type="button" class="profile-toggle" id="profileToggle" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menú de perfil">
+                        <div class="profile-avatar" id="profileAvatarHeader">
+                            <i class="fas fa-user default-avatar-icon" aria-hidden="true"></i>
+                        </div>
+                        <span class="profile-username-badge" id="profileUsernameBadge">Usuario</span>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown" role="menu">
+                        <div class="profile-dropdown-header">
+                            <div class="profile-avatar profile-avatar-large" id="profileAvatarDropdown">
+                                <i class="fas fa-user default-avatar-icon" aria-hidden="true"></i>
+                            </div>
+                            <div class="profile-dropdown-userinfo">
+                                <div class="profile-dropdown-username" id="profileDropdownUsername">Usuario</div>
+                                <button type="button" class="profile-edit-link" id="editProfileBtn">Editar perfil</button>
+                            </div>
+                        </div>
+                        <hr class="profile-divider">
+                        <ul class="profile-menu">
+                            <li role="none">
+                                <a href="index.html" class="profile-menu-item dashboard-profile-home" role="menuitem">
+                                    <i class="fas fa-house profile-menu-icon" aria-hidden="true"></i>
+                                    <span>Inicio</span>
+                                </a>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-action="profile">
+                                <i class="fas fa-user profile-menu-icon" aria-hidden="true"></i>
+                                <span>Mi perfil</span>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-action="notifications">
+                                <i class="fas fa-bell profile-menu-icon" aria-hidden="true"></i>
+                                <span>Notificaciones</span>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-action="saved">
+                                <i class="fas fa-bookmark profile-menu-icon" aria-hidden="true"></i>
+                                <span>Guardado</span>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-action="history">
+                                <i class="fas fa-history profile-menu-icon" aria-hidden="true"></i>
+                                <span>Historial</span>
+                            </li>
+                        </ul>
+                        <hr class="profile-divider">
+                        <ul class="profile-menu">
+                            <li class="profile-menu-item" role="menuitem" data-lang="es">
+                                <i class="fas fa-globe profile-menu-icon" aria-hidden="true"></i>
+                                <span>Español</span>
+                            </li>
+                            <li class="profile-menu-item" role="menuitem" data-lang="en">
+                                <i class="fas fa-globe profile-menu-icon" aria-hidden="true"></i>
+                                <span>English</span>
+                            </li>
+                        </ul>
+                        <hr class="profile-divider">
+                        <button type="button" class="profile-menu-item profile-logout-item" id="logoutBtn" role="menuitem">
+                            <i class="fas fa-sign-out-alt profile-menu-icon" aria-hidden="true"></i>
+                            <span>Salir</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="profile-modal-overlay dashboard-profile-modal" id="profileModalOverlay">
+                    <div class="profile-modal" id="profileModal">
+                        <button type="button" class="profile-modal-close" id="closeProfileModal" aria-label="Cerrar">
+                            <i class="fas fa-times" aria-hidden="true"></i>
+                        </button>
+                        <h3 class="profile-modal-title">Editar perfil</h3>
+                        <div class="profile-avatar-upload">
+                            <div class="profile-avatar profile-avatar-xl" id="profileAvatarEdit">
+                                <i class="fas fa-user default-avatar-icon" aria-hidden="true"></i>
+                            </div>
+                            <label class="profile-upload-btn" for="avatarInput">
+                                <i class="fas fa-camera" aria-hidden="true"></i>
+                                <span>Cambiar foto</span>
+                            </label>
+                            <input type="file" id="avatarInput" accept="image/*">
+                        </div>
+                        <form id="editProfileForm" class="profile-form">
+                            <div class="profile-form-group">
+                                <label for="editName" class="profile-form-label">Nombre completo</label>
+                                <input type="text" id="editName" class="profile-form-input" placeholder="Tu nombre">
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="editEmail" class="profile-form-label">Correo electrónico</label>
+                                <input type="email" id="editEmail" class="profile-form-input" placeholder="tucorreo@ejemplo.com" readonly>
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="editPhone" class="profile-form-label">Teléfono</label>
+                                <input type="tel" id="editPhone" class="profile-form-input" placeholder="0000000000">
+                            </div>
+                            <button type="submit" class="profile-save-btn">Guardar cambios</button>
+                        </form>
+                    </div>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Abrir menú" aria-expanded="false">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-nav-menu">
+            <li><a href="index.html" class="mobile-nav-link">Inicio</a></li>
+            <li><a href="autos.html" class="mobile-nav-link">Nuestra Flota</a></li>
+            <li><a href="dashboard.html" class="mobile-nav-link" aria-current="page">Panel de control</a></li>
+            <li><a href="reportes.html" class="mobile-nav-link">Reportes</a></li>
+            <li><a href="login-registro.html" class="mobile-nav-link mobile-nav-link-accent">Mi Cuenta</a></li>
+        </ul>
+    </div>
+
+    <!-- Contenido principal del panel de control -->
+    <main class="dashboard-container">
+
+        <div class="dashboard-header">
+            <div>
+                <h1 class="dashboard-title">Panel de control</h1>
+                <p class="text-gray-400 mt-1">Gestión integral de flota, reservas y métricas calculadas en tiempo real.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="role-badge" id="userRoleBadge">
+                    <i class="fas fa-user-shield"></i> <span id="roleText">Rol: CLIENTE</span>
+                </span>
+                <button type="button" class="role-switch-btn" id="toggleRoleBtn" title="Alternar rol para pruebas">
+                    <i class="fas fa-arrows-rotate"></i> Cambiar Rol
+                </button>
+            </div>
+        </div>
+
+        <!-- Métricas Dinámicas (Calculadas a partir del CRUD en localStorage) -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon"><i class="fas fa-car"></i></div>
+                <div class="metric-info">
+                    <h3 id="metric1Label">Vehículos Alquilados</h3>
+                    <div class="metric-value" id="metric1Value">0</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="metric-info">
+                    <h3 id="metric2Label">Reservas Activas</h3>
+                    <div class="metric-value" id="metric2Value">0</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon"><i class="fas fa-wallet"></i></div>
+                <div class="metric-info">
+                    <h3 id="metric3Label">Gasto Acumulado</h3>
+                    <div class="metric-value" id="metric3Value">$0.00</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="metric-info">
+                    <h3 id="metric4Label">Puntos Fidelidad</h3>
+                    <div class="metric-value" id="metric4Value">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pestañas de Gestión (Solo visible para Admin) -->
+        <div class="dash-tabs" id="adminTabsContainer" hidden>
+            <button type="button" class="dash-tab-btn active" id="tabFleetBtn" data-dashboard-action="switch-admin-tab" data-tab="fleet">
+                <i class="fas fa-car-side"></i> Gestión de Flota (CRUD)
+            </button>
+            <button type="button" class="dash-tab-btn" id="tabReservationsBtn" data-dashboard-action="switch-admin-tab" data-tab="reservations">
+                <i class="fas fa-calendar-alt"></i> Gestión de Reservas (CRUD)
+            </button>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="dashboard-content" id="dashboardGrid">
+
+            <!-- Columna principal (Tablas y CRUD) -->
+            <div class="dashboard-main-col">
+
+                <!-- VISTA ADMIN 1: CRUD DE FLOTA -->
+                <div class="dashboard-card" id="adminFleetCard" hidden>
+                    <div class="card-header-flex">
+                        <h2 class="card-header-title">
+                            <i class="fas fa-car-side text-red-600"></i> Catálogo y Flota de Vehículos
+                        </h2>
+                        <button type="button" class="btn-action-primary" data-dashboard-action="open-vehicle-modal">
+                            <i class="fas fa-plus"></i> Nuevo Vehículo
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Foto</th>
+                                    <th>Modelo / Vehículo</th>
+                                    <th>Categoría</th>
+                                    <th>Transmisión</th>
+                                    <th>Pasajeros</th>
+                                    <th>Precio/Día</th>
+                                    <th>Estado</th>
+                                    <th class="text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fleetTableBody">
+                                <!-- Se llena dinámicamente con JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VISTA ADMIN 2: CRUD DE TODAS LAS RESERVAS -->
+                <div class="dashboard-card" id="adminReservationsCard" hidden>
+                    <div class="card-header-flex">
+                        <h2 class="card-header-title">
+                            <i class="fas fa-tasks text-red-600"></i> Control Global de Reservas
+                        </h2>
+                        <button type="button" class="btn-action-primary" data-dashboard-action="open-reservation-modal">
+                            <i class="fas fa-plus"></i> Nueva Reserva Manual
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Vehículo</th>
+                                    <th>Fechas</th>
+                                    <th>Monto</th>
+                                    <th>Estado</th>
+                                    <th class="text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allReservationsTableBody">
+                                <!-- Se llena dinámicamente con JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VISTA CLIENTE: MIS RESERVAS -->
+                <div class="dashboard-card" id="clientReservationsCard">
+                    <div class="card-header-flex">
+                        <h2 class="card-header-title">
+                            <i class="fas fa-list text-red-600"></i> Mis Reservas Recientes
+                        </h2>
+                        <a href="autos.html" class="btn-action-primary">
+                            <i class="fas fa-search"></i> Reservar otro auto
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Reserva</th>
+                                    <th>Vehículo</th>
+                                    <th>Fechas (Inicio - Fin)</th>
+                                    <th>Lugar Recogida</th>
+                                    <th>Monto</th>
+                                    <th>Estado</th>
+                                    <th class="text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientTableBody">
+                                <!-- Se llena dinámicamente con JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Columna lateral: Notificaciones e información rápida -->
+            <div class="dashboard-side-col">
+                <div class="dashboard-card">
+                    <h2 class="card-header-title">
+                        <i class="fas fa-bell text-red-600"></i> Notificaciones y Avisos
+                    </h2>
+                    <ul class="space-y-3" id="notificationsList">
+                        <!-- Cargado vía JS -->
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2 class="card-header-title">
+                        <i class="fas fa-shield-halved text-red-600"></i> Centro de Ayuda 24/7
+                    </h2>
+                    <p class="text-sm text-gray-400 mb-3">
+                        ¿Tienes dudas sobre tu alquiler o necesitas asistencia en carretera?
+                    </p>
+                    <div class="flex flex-col gap-2">
+                        <a href="tel:+34900123456" class="inline-flex items-center gap-2 text-sm text-red-400 hover:text-red-300">
+                            <i class="fas fa-phone"></i> +34 900 123 456
+                        </a>
+                        <a href="mailto:soporte@santalucia.com" class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white">
+                            <i class="fas fa-envelope"></i> soporte@santalucia.com
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL CRUD: ALTA / EDICIÓN DE VEHÍCULO     -->
+    <!-- ========================================== -->
+    <div class="crud-modal-overlay" id="vehicleModalOverlay" role="dialog" aria-modal="true">
+        <div class="crud-modal">
+            <button type="button" class="crud-modal-close" data-dashboard-action="close-vehicle-modal">&times;</button>
+            <h3 class="crud-modal-title" id="vehicleModalTitle">
+                <i class="fas fa-car text-red-600"></i> Agregar Vehículo a la Flota
+            </h3>
+
+            <form id="vehicleCrudForm">
+                <input type="hidden" id="crudVehicleId">
+
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="crudVehicleName">Nombre / Modelo del Vehículo *</label>
+                    <input type="text" class="crud-form-input" id="crudVehicleName" placeholder="Ej: Nissan Versa 2026" required>
+                </div>
+
+                <div class="crud-form-row">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudVehicleCategory">Categoría *</label>
+                        <select class="crud-form-select" id="crudVehicleCategory" required>
+                            <option value="autos">Autos</option>
+                            <option value="suv">SUV</option>
+                            <option value="vans">Vans</option>
+                            <option value="camiones">Camiones / Pickups</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudVehicleCategoryLabel">Etiqueta de Tipo</label>
+                        <input type="text" class="crud-form-input" id="crudVehicleCategoryLabel" placeholder="Ej: Compacto, Lujo, Económico" required>
+                    </div>
+                </div>
+
+                <div class="crud-form-row">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudVehicleTransmission">Transmisión *</label>
+                        <select class="crud-form-select" id="crudVehicleTransmission" required>
+                            <option value="automatica">Automática</option>
+                            <option value="manual">Manual</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudVehiclePrice">Precio por Día ($) *</label>
+                        <input type="number" class="crud-form-input" id="crudVehiclePrice" min="1" step="0.5" placeholder="Ej: 45" required>
+                    </div>
+                </div>
+
+                <div class="crud-form-row">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudVehiclePassengers">Capacidad (Pasajeros) *</label>
+                        <input type="number" class="crud-form-input" id="crudVehiclePassengers" min="1" max="15" value="5" required>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudVehicleLuggage">Maletas</label>
+                        <input type="number" class="crud-form-input" id="crudVehicleLuggage" min="0" max="10" value="2" required>
+                    </div>
+                </div>
+
+                <div class="crud-form-row">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudVehicleStatus">Estado Actual</label>
+                        <select class="crud-form-select" id="crudVehicleStatus" required>
+                            <option value="Disponible">Disponible</option>
+                            <option value="Alquilado">Alquilado</option>
+                            <option value="En Mantenimiento">En Mantenimiento</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudVehicleImage">Foto del Vehículo</label>
+                        <select class="crud-form-select" id="crudVehicleImage">
+                            <option value="fotos/1.jpg">Foto 1 (Compacto Rojo)</option>
+                            <option value="fotos/2.jpg">Foto 2 (Descapotable)</option>
+                            <option value="fotos/3.jpg">Foto 3 (Compacto Especial)</option>
+                            <option value="fotos/4.jpg">Foto 4 (Económico)</option>
+                            <option value="fotos/KIA1.jpg">Foto KIA 1 (SUV)</option>
+                            <option value="fotos/KIA2.jpg">Foto KIA 2 (Lujo)</option>
+                            <option value="fotos/carro1.jpg">Foto Carro 1 (Van)</option>
+                            <option value="fotos/carro2.jpg">Foto Carro 2 (Camioneta)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" class="btn-action-sm btn-cancel px-4 py-2" data-dashboard-action="close-vehicle-modal">Cancelar</button>
+                    <button type="submit" class="btn-action-primary" id="saveVehicleBtn">Guardar Vehículo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL CRUD: ALTA / EDICIÓN DE RESERVA      -->
+    <!-- ========================================== -->
+    <div class="crud-modal-overlay" id="reservationModalOverlay" role="dialog" aria-modal="true">
+        <div class="crud-modal">
+            <button type="button" class="crud-modal-close" data-dashboard-action="close-reservation-modal">&times;</button>
+            <h3 class="crud-modal-title" id="reservationModalTitle">
+                <i class="fas fa-calendar-plus text-red-600"></i> Registrar Reserva Manual
+            </h3>
+
+            <form id="reservationCrudForm">
+                <input type="hidden" id="crudResId">
+
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="crudResClient">Correo del Cliente *</label>
+                    <input type="email" class="crud-form-input" id="crudResClient" placeholder="cliente@ejemplo.com" required>
+                </div>
+
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="crudResVehicle">Vehículo Asignado *</label>
+                    <select class="crud-form-select" id="crudResVehicle" required>
+                        <!-- Opciones de flota cargadas vía JS -->
+                    </select>
+                </div>
+
+                <div class="crud-form-row">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudResStart">Fecha Inicio *</label>
+                        <input type="date" class="crud-form-input" id="crudResStart" required>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudResEnd">Fecha Fin *</label>
+                        <input type="date" class="crud-form-input" id="crudResEnd" required>
+                    </div>
+                </div>
+
+                <div class="crud-form-row">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudResAmount">Monto Total ($) *</label>
+                        <input type="number" class="crud-form-input" id="crudResAmount" min="1" step="0.5" required>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="crudResStatus">Estado de la Reserva</label>
+                        <select class="crud-form-select" id="crudResStatus" required>
+                            <option value="Activa">Activa</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Completada">Completada</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" class="btn-action-sm btn-cancel px-4 py-2" data-dashboard-action="close-reservation-modal">Cancelar</button>
+                    <button type="submit" class="btn-action-primary">Guardar Reserva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Información General (Oficinas, Empresa, etc.) -->
+    <div class="crud-modal-overlay" id="infoModalOverlay" role="dialog" aria-modal="true">
+        <div class="crud-modal">
+            <button type="button" class="crud-modal-close" data-dashboard-action="close-info-modal">&times;</button>
+            <h3 class="crud-modal-title" id="infoModalTitle">Información</h3>
+            <div id="infoModalContent" class="text-sm text-gray-300 space-y-3 leading-relaxed"></div>
+            <div class="flex justify-end mt-5">
+                <button type="button" class="btn-action-primary" data-dashboard-action="close-info-modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app-data.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

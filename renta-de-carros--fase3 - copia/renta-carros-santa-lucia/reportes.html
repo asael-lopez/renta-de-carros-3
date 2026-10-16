@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Reporte mensual de vehículos alquilados de Alquiler Santa Lucía.">
+    <title>Reportes - Santa Lucía Alquiler</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/reportes.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar" aria-label="Navegación principal">
+            <a href="index.html" class="logo-link" aria-label="Alquiler Santa Lucía, inicio">
+                <div class="logo">
+                    <span class="logo-oto">SANTA</span>
+                    <span class="logo-q">LUCÍA</span>
+                    <span class="logo-sub">ALQUILER</span>
+                </div>
+            </a>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Inicio</a></li>
+                    <li><a href="autos.html" class="nav-link">Nuestra Flota</a></li>
+                    <li><a href="dashboard.html" class="nav-link">Panel de control</a></li>
+                    <li><a href="reportes.html" class="nav-link" aria-current="page">Reportes</a></li>
+                </ul>
+                <div class="user-box reports-user">
+                    <span class="user-welcome" id="reportUserDisplay">Usuario</span>
+                    <button type="button" class="logout-btn" id="reportLogoutBtn" aria-label="Salir">
+                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i><span>Salir</span>
+                    </button>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Abrir menú" aria-expanded="false">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-nav-menu">
+            <li><a href="index.html" class="mobile-nav-link">Inicio</a></li>
+            <li><a href="autos.html" class="mobile-nav-link">Nuestra Flota</a></li>
+            <li><a href="dashboard.html" class="mobile-nav-link">Panel de control</a></li>
+            <li><a href="reportes.html" class="mobile-nav-link" aria-current="page">Reportes</a></li>
+        </ul>
+    </div>
+
+    <main class="reports-main">
+        <section class="reports-heading" aria-labelledby="reportsTitle">
+            <span class="reports-eyebrow">Alquiler Santa Lucía</span>
+            <h1 class="reports-title" id="reportsTitle">Módulo de Reportes</h1>
+            <p class="reports-description">Consulta el comportamiento mensual de los alquileres de vehículos.</p>
+        </section>
+
+        <section class="reports-card" aria-labelledby="monthlyRentalsTitle">
+            <div class="reports-card-header">
+                <h2 class="reports-card-title" id="monthlyRentalsTitle">
+                    <i class="fas fa-chart-column" aria-hidden="true"></i>
+                    Vehículos alquilados por mes
+                </h2>
+                <span class="reports-period">Enero — Junio</span>
+            </div>
+            <div class="reports-chart-wrap">
+                <canvas id="monthlyRentalsChart" role="img" aria-label="Gráfica de barras con la cantidad de vehículos alquilados de enero a junio">
+                    Gráfica de vehículos alquilados de enero a junio.
+                </canvas>
+            </div>
+            <p class="reports-note">Las cantidades mostradas son datos de ejemplo para visualizar el reporte.</p>
+            <p class="reports-error" id="chartError" role="alert" hidden></p>
+        </section>
+    </main>
+
+    <!-- ========== FOOTER / PIE DE PÁGINA ========== -->
+    <footer class="footer">
+        <div class="footer-container">
+
+            <!-- Columna 1: Empresa -->
+            <div class="footer-col footer-brand">
+                <div class="logo footer-logo">
+                    <span class="logo-oto">SANTA</span>
+                    <span class="logo-q">LUCÍA</span>
+                    <span class="logo-sub">ALQUILER</span>
+                </div>
+                <p class="footer-tagline">Alquiler de vehículos con la mejor flota y atención personalizada. Muévete con libertad, estilo y confianza.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-link" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@alquilersantalucia?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="social-link" title="X"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-link" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <!-- Columna 2: Enlaces rápidos -->
+            <div class="footer-col">
+                <h4 class="footer-title">Enlaces Rápidos</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="autos.html">Nuestra Flota</a></li>
+                    <li><a href="#">Oficinas</a></li>
+                    <li><a href="#">Quiénes Somos</a></li>
+                    <li><a href="#">Nuestro Equipo</a></li>
+                    <li><a href="#">Ofertas</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 3: Servicios -->
+            <div class="footer-col">
+                <h4 class="footer-title">Servicios</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Alquiler Largo Plazo</a></li>
+                    <li><a href="#">Corporativos</a></li>
+                    <li><a href="#">Entrega a Domicilio</a></li>
+                    <li><a href="#">Recogida Aeropuerto</a></li>
+                    <li><a href="#">Seguros</a></li>
+                    <li><a href="#">Asistencia 24/7</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 4: Contacto -->
+            <div class="footer-col footer-contact">
+                <h4 class="footer-title">Contacto</h4>
+                <ul class="contact-list">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Av. Principal 123, Centro, Madrid, España</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:+34900123456">+34 900 123 456</a>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:info@santalucia.com">info@santalucia.com</a>
+                    </li>
+                    <li>
+                        <i class="far fa-clock"></i>
+                        <span>Lun-Sáb: 08:00 - 20:00</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Franja inferior: Legal + Copyright -->
+        <div class="footer-bottom">
+            <div class="footer-container footer-bottom-inner">
+                <p class="footer-copy">&copy; <span id="year"></span> Santa Lucía Alquiler. Todos los derechos reservados.</p>
+                <ul class="footer-legal">
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Política de Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app-data.js"></script>
+    <script src="js/reportes.js"></script>
+</body>
+</html>

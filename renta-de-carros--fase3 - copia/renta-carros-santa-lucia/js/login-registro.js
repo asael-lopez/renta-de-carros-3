@@ -77,6 +77,18 @@
     el.classList.toggle('is-invalid', invalid);
   }
 
+  function isValidEmail(value){
+    return value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function isValidPhone(value){
+    const digits = value.replace(/[^0-9]/g, '');
+    return value.length <= 25 &&
+      /^\+?[0-9().\s-]+$/.test(value) &&
+      digits.length >= 8 &&
+      digits.length <= 15;
+  }
+
   // ---------- Validación + envío: LOGIN (Requisitos 4 y 9) ----------
   document.getElementById('loginForm').addEventListener('submit', function(e){
     e.preventDefault();
@@ -89,8 +101,8 @@
     const emailVal = email.value.trim();
     const passVal = pass.value;
 
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
-    const passOk = passVal.length >= 6;
+    const emailOk = isValidEmail(emailVal);
+    const passOk = passVal.trim().length > 0 && passVal.length >= 6 && passVal.length <= 128;
 
     setInvalid(email, !emailOk);
     passWrap.classList.toggle('is-invalid', !passOk);
@@ -145,22 +157,24 @@
     const passVal = pass.value;
     const pass2Val = pass2.value;
 
-    const nameOk = nameVal.length >= 3;
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
-    const phoneDigits = phoneVal.replace(/[^0-9]/g, '');
-    const phoneOk = phoneDigits.length >= 8;
-    const passOk = passVal.length >= 6;
-    const matchOk = pass2Val === passVal && pass2Val.length >= 6;
+    const nameOk = nameVal.length >= 3 && nameVal.length <= 80 &&
+      nameVal.replace(/[^\p{L}]/gu, '').length >= 3;
+    const emailOk = isValidEmail(emailVal);
+    const phoneOk = isValidPhone(phoneVal);
+    const roleOk = !role || ['cliente', 'admin'].includes(roleVal);
+    const passOk = passVal.trim().length > 0 && passVal.length >= 6 && passVal.length <= 128;
+    const matchOk = pass2Val === passVal && pass2Val.length > 0 && pass2Val.length <= 128;
     const termsOk = terms.checked;
 
     setInvalid(name, !nameOk);
     setInvalid(email, !emailOk);
     setInvalid(phone, !phoneOk);
+    if (role) setInvalid(role, !roleOk);
     passWrap.classList.toggle('is-invalid', !passOk);
     pass2Wrap.classList.toggle('is-invalid', !matchOk);
     termsError.classList.toggle('is-visible', !termsOk);
 
-    if(!nameOk || !emailOk || !phoneOk || !passOk || !matchOk || !termsOk){
+    if(!nameOk || !emailOk || !phoneOk || !roleOk || !passOk || !matchOk || !termsOk){
       return;
     }
 

@@ -958,17 +958,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 var newName = editName ? editName.value.trim() : '';
                 var newPhone = editPhone ? editPhone.value.trim() : '';
 
-                // VALIDACIÓN: Nombre no puede estar vacío ni tener menos de 3 caracteres
-                if (!newName || newName.length < 3) {
-                    alert('Validación de perfil: El nombre es obligatorio y debe tener al menos 3 caracteres.');
+                // VALIDACIÓN: Nombre obligatorio con longitud razonable
+                if (newName.length < 3 || newName.length > 80 ||
+                    newName.replace(/[^\p{L}]/gu, '').length < 3) {
+                    alert('Validación de perfil: El nombre debe tener entre 3 y 80 caracteres e incluir al menos 3 letras.');
                     if (editName) editName.focus();
                     return;
                 }
 
-                // VALIDACIÓN: Teléfono si se ingresa debe tener al menos 8 dígitos
+                // VALIDACIÓN: Teléfono opcional; si se ingresa, debe tener formato y longitud válidos
                 var phoneDigits = newPhone.replace(/[^0-9]/g, '');
-                if (newPhone && phoneDigits.length < 8) {
-                    alert('Validación de perfil: Por favor ingresa un número de teléfono válido (mínimo 8 dígitos).');
+                if (newPhone && (
+                    newPhone.length > 25 ||
+                    !/^\+?[0-9().\s-]+$/.test(newPhone) ||
+                    phoneDigits.length < 8 ||
+                    phoneDigits.length > 15
+                )) {
+                    alert('Validación de perfil: Ingresa un teléfono válido con entre 8 y 15 dígitos.');
                     if (editPhone) editPhone.focus();
                     return;
                 }
@@ -1399,7 +1405,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const opt = document.createElement('option');
                 opt.value = v.id;
                 opt.textContent = `${v.name} (${v.categoryLabel}) — $${v.price}/día [${v.status}]`;
-                if (preferredVehicleId && String(v.id) === String(preferredVehicleId)) {
+                opt.disabled = v.status === 'En Mantenimiento';
+                if (!opt.disabled && preferredVehicleId && String(v.id) === String(preferredVehicleId)) {
                     opt.selected = true;
                 }
                 select.appendChild(opt);
@@ -1509,6 +1516,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 lugar: location,
                 estado: 'Activa'
             }) : null;
+
+            if (!resResult) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Vehículo no disponible',
+                    text: 'No se puede reservar un vehículo que está en mantenimiento. Selecciona otro vehículo.',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#DC2626',
+                    background: '#1a1a1a',
+                    color: '#ffffff'
+                });
+                return;
+            }
 
             window.closeReservationModal();
 

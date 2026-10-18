@@ -165,6 +165,19 @@
             </div>
         </div>
 
+        <!-- Pestañas de Gestión (Solo visible para Admin) -->
+        <div class="dash-tabs" id="adminTabsContainer" hidden>
+            <button type="button" class="dash-tab-btn active" id="tabFleetBtn" data-dashboard-action="switch-admin-tab" data-tab="fleet">
+                <i class="fas fa-car-side"></i> Gestión de Flota (CRUD)
+            </button>
+            <button type="button" class="dash-tab-btn" id="tabReservationsBtn" data-dashboard-action="switch-admin-tab" data-tab="reservations">
+                <i class="fas fa-calendar-alt"></i> Gestión de Reservas (CRUD)
+            </button>
+            <button type="button" class="dash-tab-btn" id="tabMaintenanceBtn" data-dashboard-action="switch-admin-tab" data-tab="maintenance">
+                <i class="fas fa-screwdriver-wrench"></i> Mantenimiento
+            </button>
+        </div>
+
         <!-- Métricas Dinámicas (Calculadas a partir del CRUD en localStorage) -->
         <section class="metrics-grid">
             <div class="metric-card">
@@ -196,16 +209,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Pestañas de Gestión (Solo visible para Admin) -->
-        <div class="dash-tabs" id="adminTabsContainer" hidden>
-            <button type="button" class="dash-tab-btn active" id="tabFleetBtn" data-dashboard-action="switch-admin-tab" data-tab="fleet">
-                <i class="fas fa-car-side"></i> Gestión de Flota (CRUD)
-            </button>
-            <button type="button" class="dash-tab-btn" id="tabReservationsBtn" data-dashboard-action="switch-admin-tab" data-tab="reservations">
-                <i class="fas fa-calendar-alt"></i> Gestión de Reservas (CRUD)
-            </button>
-        </div>
 
         <!-- Contenido principal -->
         <div class="dashboard-content" id="dashboardGrid">
@@ -270,6 +273,35 @@
                             <tbody id="allReservationsTableBody">
                                 <!-- Se llena dinámicamente con JS -->
                             </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VISTA ADMIN 3: HISTORIAL DE MANTENIMIENTOS -->
+                <div class="dashboard-card" id="adminMaintenanceCard" hidden>
+                    <div class="card-header-flex">
+                        <h2 class="card-header-title">
+                            <i class="fas fa-screwdriver-wrench text-red-600"></i> Historial de Mantenimientos
+                        </h2>
+                        <button type="button" class="btn-action-primary" data-dashboard-action="open-maintenance-modal">
+                            <i class="fas fa-plus"></i> Registrar Mantenimiento
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Vehículo</th>
+                                    <th>Tipo</th>
+                                    <th>Kilometraje</th>
+                                    <th>Costo</th>
+                                    <th>Observaciones</th>
+                                    <th>Estado</th>
+                                    <th class="text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="maintenanceTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -485,6 +517,64 @@
                 <div class="flex justify-end gap-3 mt-6">
                     <button type="button" class="btn-action-sm btn-cancel px-4 py-2" data-dashboard-action="close-reservation-modal">Cancelar</button>
                     <button type="submit" class="btn-action-primary">Guardar Reserva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: REGISTRO DE MANTENIMIENTO -->
+    <div class="crud-modal-overlay" id="maintenanceModalOverlay" role="dialog" aria-modal="true">
+        <div class="crud-modal">
+            <button type="button" class="crud-modal-close" data-dashboard-action="close-maintenance-modal" aria-label="Cerrar">&times;</button>
+            <h3 class="crud-modal-title">
+                <i class="fas fa-screwdriver-wrench text-red-600"></i> Registrar Mantenimiento
+            </h3>
+
+            <form id="maintenanceCrudForm">
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="maintenanceVehicle">Vehículo *</label>
+                    <select class="crud-form-select" id="maintenanceVehicle" required></select>
+                </div>
+
+                <div class="crud-form-row">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="maintenanceDate">Fecha *</label>
+                        <input type="date" class="crud-form-input" id="maintenanceDate" required>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="maintenanceMileage">Kilometraje (km) *</label>
+                        <input type="number" class="crud-form-input" id="maintenanceMileage" min="0" step="1" required>
+                    </div>
+                </div>
+
+                <div class="crud-form-row">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="maintenanceCost">Costo ($) *</label>
+                        <input type="number" class="crud-form-input" id="maintenanceCost" min="0" step="0.01" required>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="maintenanceType">Tipo de mantenimiento *</label>
+                        <select class="crud-form-select" id="maintenanceType" required>
+                            <option value="">Selecciona un tipo</option>
+                            <option value="Preventivo">Preventivo</option>
+                            <option value="Correctivo">Correctivo</option>
+                            <option value="Cambio de aceite">Cambio de aceite</option>
+                            <option value="Frenos">Frenos</option>
+                            <option value="Neumáticos">Neumáticos</option>
+                            <option value="Revisión general">Revisión general</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="maintenanceNotes">Observaciones</label>
+                    <textarea class="crud-form-input" id="maintenanceNotes" rows="3" maxlength="500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" class="btn-action-sm btn-cancel px-4 py-2" data-dashboard-action="close-maintenance-modal">Cancelar</button>
+                    <button type="submit" class="btn-action-primary">Guardar Mantenimiento</button>
                 </div>
             </form>
         </div>

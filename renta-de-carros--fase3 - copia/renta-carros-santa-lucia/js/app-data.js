@@ -6,6 +6,7 @@ const DataManager = (function () {
     const STORAGE_KEY_FLEET = 'santalucia_flota';
     const STORAGE_KEY_USERS = 'usuarios_registrados';
     const STORAGE_KEY_RESERVATIONS = 'santalucia_reservas';
+    const STORAGE_KEY_MAINTENANCE = 'santalucia_mantenimientos';
     const STORAGE_KEY_SESSION = 'usuario';
 
     // Flota inicial por defecto
@@ -357,6 +358,168 @@ const DataManager = (function () {
     }
 
     // ------------------------------------------------------------------------
+    // MANTENIMIENTOS
+    // ------------------------------------------------------------------------
+    function getMaintenances() {
+        const data = localStorage.getItem(STORAGE_KEY_MAINTENANCE);
+        if (!data) return [];
+
+        const maintenances = JSON.parse(data);
+        if (!Array.isArray(maintenances)) {
+            throw new Error('El historial de mantenimientos tiene un formato inválido.');
+        }
+        return maintenances;
+    }
+
+    function saveMaintenances(maintenances) {
+        try {
+            localStorage.setItem(STORAGE_KEY_MAINTENANCE, JSON.stringify(maintenances));
+            return true;
+        } catch (e) {
+            console.error('Error guardando mantenimientos:', e);
+            return false;
+        }
+    }
+
+    function createMaintenance(maintenanceData) {
+        if (!maintenanceData || typeof maintenanceData !== 'object') {
+            return { ok: false, message: 'Los datos del mantenimiento no son válidos.' };
+        }
+
+        const vehicle = getVehicleById(maintenanceData.vehicleId);
+        if (!vehicle) {
+            return { ok: false, message: 'Selecciona un vehículo existente.' };
+        }
+        if (vehicle.status === 'Alquilado') {
+            return { ok: false, message: 'No se puede iniciar mantenimiento mientras el vehículo está alquilado.' };
+        }
+
+        const maintenanceDate = String(maintenanceData.fecha || '');
+        const dateParts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(maintenanceDate);
+        const parsedDate = dateParts
+            ? new Date(Number(dateParts[1]), Number(dateParts[2]) - 1, Number(dateParts[3]))
+            : null;
+        if (!parsedDate || Number.isNaN(parsedDate.getTime()) ||
+            parsedDate.getFullYear() !== Number(dateParts[1]) ||
+            parsedDate.getMonth() !== Number(dateParts[2]) - 1 ||
+            parsedDate.getDate() !== Number(dateParts[3])) {
+            return { ok: false, message: 'Ingresa una fecha de mantenimiento válida.' };
+        }
+        const today = new Date();
+        const todayDate = [
+            today.getFullYear(),
+            String(today.getMonth() + 1).padStart(2, '0'),
+            String(today.getDate()).padStart(2, '0')
+        ].join('-');
+        if (maintenanceDate > todayDate) {
+            return { ok: false, message: 'La fecha del mantenimiento no puede ser futura.' };
+        }
+
+        const hasConflictingReservation = getReservations().some(reservation =>
+            String(reservation.autoId) === String(vehicle.id) &&
+            ['Activa', 'Pendiente'].includes(reservation.estado) &&
+            (!reservation.fechaFin || reservation.fechaFin >= maintenanceDate)
+        );
+        if (hasConflictingReservation) {
+            return { ok: false, message: 'El vehículo tiene una reserva activa o pendiente que podría coincidir con el mantenimiento.' };
+        }
+
+        const mileageInput = maintenanceData.kilometraje;
+        const costInput = maintenanceData.costo;
+        if (mileageInput === '' || mileageInput === null || mileageInput === undefined ||
+            costInput === '' || costInput === null || costInput === undefined) {
+            return { ok: false, message: 'El kilometraje y el costo son obligatorios.' };
+        }
+
+        const mileage = Number(mileageInput);
+        const cost = Number(costInput);
+        const type = String(maintenanceData.tipo || '').trim();
+        if (!Number.isInteger(mileage) || mileage < 0) {
+            return { ok: false, message: 'El kilometraje debe ser un número entero igual o mayor que cero.' };
+        }
+        if (!Number.isFinite(cost) || cost < 0) {
+            return { ok: false, message: 'El costo debe ser un número igual o mayor que cero.' };
+        }
+        if (!type) {
+            return { ok: false, message: 'Selecciona el tipo de mantenimiento.' };
+        }
+
+        const maintenances = getMaintenances();
+        if (maintenances.some(item =>
+            String(item.vehicleId) === String(vehicle.id) && item.estado === 'En curso'
+        )) {
+            return { ok: false, message: 'Este vehículo ya tiene un mantenimiento en curso.' };
+        }
+
+        let maintenanceId = 'MNT-' + Date.now();
+        let idSequence = 1;
+        while (maintenances.some(item => String(item.id) === maintenanceId)) {
+            maintenanceId = 'MNT-' + Date.now() + '-' + idSequence++;
+        }
+
+        const maintenance = {
+            id: maintenanceId,
+            vehicleId: vehicle.id,
+            vehicleName: vehicle.name,
+            fecha: maintenanceDate,
+            kilometraje: mileage,
+            costo: cost,
+            tipo: type,
+            observaciones: String(maintenanceData.observaciones || '').trim(),
+            estado: 'En curso'
+        };
+        maintenances.unshift(maintenance);
+        if (!saveMaintenances(maintenances)) {
+            return { ok: false, message: 'No se pudo guardar el mantenimiento. Intenta de nuevo.' };
+        }
+
+        updateVehicle(vehicle.id, { status: 'En Mantenimiento' });
+        if (getVehicleById(vehicle.id)?.status !== 'En Mantenimiento') {
+            if (!saveMaintenances(maintenances.filter(item => item.id !== maintenance.id))) {
+                console.error('No se pudo revertir un mantenimiento tras fallar la actualización del vehículo.');
+            }
+            return { ok: false, message: 'No se pudo actualizar el estado del vehículo.' };
+        }
+
+        return { ok: true, maintenance: maintenance };
+    }
+
+    function completeMaintenance(id) {
+        const maintenances = getMaintenances();
+        const index = maintenances.findIndex(item => String(item.id) === String(id));
+        if (index === -1) {
+            return { ok: false, message: 'No se encontró el mantenimiento seleccionado.' };
+        }
+        if (maintenances[index].estado !== 'En curso') {
+            return { ok: false, message: 'Este mantenimiento ya fue finalizado.' };
+        }
+
+        const previousMaintenance = maintenances[index];
+        maintenances[index] = {
+            ...previousMaintenance,
+            estado: 'Finalizado',
+            fechaFinalizacion: new Date().toISOString().slice(0, 10)
+        };
+        if (!saveMaintenances(maintenances)) {
+            return { ok: false, message: 'No se pudo finalizar el mantenimiento. Intenta de nuevo.' };
+        }
+
+        const vehicle = getVehicleById(previousMaintenance.vehicleId);
+        if (vehicle && vehicle.status === 'En Mantenimiento') {
+            updateVehicle(vehicle.id, { status: 'Disponible' });
+            if (getVehicleById(vehicle.id)?.status !== 'Disponible') {
+                maintenances[index] = previousMaintenance;
+                if (!saveMaintenances(maintenances)) {
+                    console.error('No se pudo revertir el cierre de mantenimiento tras fallar la actualización del vehículo.');
+                }
+                return { ok: false, message: 'No se pudo actualizar el vehículo a Disponible.' };
+            }
+        }
+
+        return { ok: true, maintenance: maintenances[index] };
+    }
+
+    // ------------------------------------------------------------------------
     // RESERVAS (CRUD)
     // ------------------------------------------------------------------------
     function getReservations() {
@@ -385,6 +548,11 @@ const DataManager = (function () {
     }
 
     function createReservation(resData) {
+        const reservedVehicle = resData.autoId ? getVehicleById(resData.autoId) : null;
+        if (reservedVehicle && reservedVehicle.status === 'En Mantenimiento') {
+            return null;
+        }
+
         const reservas = getReservations();
         const codeNum = Math.floor(1000 + Math.random() * 9000);
         const newReservation = {
@@ -422,15 +590,26 @@ const DataManager = (function () {
         if (index === -1) return false;
 
         const prevStatus = reservas[index].estado;
-        reservas[index] = {
+        const updatedReservation = {
             ...reservas[index],
             ...updatedFields
         };
+        const updatedVehicle = updatedReservation.autoId
+            ? getVehicleById(updatedReservation.autoId)
+            : null;
+        if (updatedReservation.estado === 'Activa' &&
+            updatedVehicle && updatedVehicle.status === 'En Mantenimiento') {
+            return false;
+        }
+        reservas[index] = updatedReservation;
         saveReservations(reservas);
 
         // Si se cancela o completa la reserva, devolver el auto a 'Disponible'
         if (reservas[index].autoId && (updatedFields.estado === 'Cancelada' || updatedFields.estado === 'Completada')) {
-            updateVehicle(reservas[index].autoId, { status: 'Disponible' });
+            const vehicle = getVehicleById(reservas[index].autoId);
+            if (vehicle && vehicle.status === 'Alquilado') {
+                updateVehicle(reservas[index].autoId, { status: 'Disponible' });
+            }
         } else if (reservas[index].autoId && updatedFields.estado === 'Activa' && prevStatus !== 'Activa') {
             updateVehicle(reservas[index].autoId, { status: 'Alquilado' });
         }
@@ -446,7 +625,10 @@ const DataManager = (function () {
         if (reservas.length !== prevLength) {
             saveReservations(reservas);
             if (res && res.autoId && res.estado === 'Activa') {
-                updateVehicle(res.autoId, { status: 'Disponible' });
+                const vehicle = getVehicleById(res.autoId);
+                if (vehicle && vehicle.status === 'Alquilado') {
+                    updateVehicle(res.autoId, { status: 'Disponible' });
+                }
             }
             return true;
         }
@@ -482,9 +664,32 @@ const DataManager = (function () {
     }
 
     function registerUser(userData) {
-        const emailNorm = (userData.email || '').toLowerCase().trim();
-        if (!emailNorm) {
-            return { ok: false, message: 'El correo electrónico es obligatorio.' };
+        if (!userData || typeof userData !== 'object') {
+            return { ok: false, message: 'Los datos de registro no son válidos.' };
+        }
+
+        const emailNorm = String(userData.email || '').toLowerCase().trim();
+        const name = String(userData.name || '').trim();
+        const phone = String(userData.phone || '').trim();
+        const password = String(userData.password || '');
+        const role = userData.role || (emailNorm.includes('admin') ? 'admin' : 'cliente');
+
+        if (!emailNorm || emailNorm.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm)) {
+            return { ok: false, message: 'Ingresa un correo electrónico válido.' };
+        }
+        if (name.length < 3 || name.length > 80 || name.replace(/[^\p{L}]/gu, '').length < 3) {
+            return { ok: false, message: 'El nombre debe tener entre 3 y 80 caracteres e incluir al menos 3 letras.' };
+        }
+        const phoneDigits = phone.replace(/[^0-9]/g, '');
+        if (phone.length > 25 || !/^\+?[0-9().\s-]+$/.test(phone) ||
+            phoneDigits.length < 8 || phoneDigits.length > 15) {
+            return { ok: false, message: 'Ingresa un teléfono válido con entre 8 y 15 dígitos.' };
+        }
+        if (!password.trim() || password.length < 6 || password.length > 128) {
+            return { ok: false, message: 'La contraseña debe tener entre 6 y 128 caracteres.' };
+        }
+        if (!['cliente', 'admin'].includes(role)) {
+            return { ok: false, message: 'Selecciona un tipo de cuenta válido.' };
         }
 
         const existing = findUserByEmail(emailNorm);
@@ -495,10 +700,10 @@ const DataManager = (function () {
         const users = getUsers();
         const newUser = {
             email: emailNorm,
-            password: userData.password || '',
-            name: userData.name ? userData.name.trim() : 'Usuario',
-            phone: userData.phone ? userData.phone.trim() : '',
-            role: userData.role ? userData.role : (emailNorm.includes('admin') ? 'admin' : 'cliente'),
+            password: password,
+            name: name,
+            phone: phone,
+            role: role,
             avatar: userData.avatar || ''
         };
 
@@ -682,6 +887,11 @@ const DataManager = (function () {
         createVehicle,
         updateVehicle,
         deleteVehicle,
+
+        // Mantenimientos
+        getMaintenances,
+        createMaintenance,
+        completeMaintenance,
 
         // Reservas
         getReservations,

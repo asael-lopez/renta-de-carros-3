@@ -98,16 +98,16 @@
 
         <div class="mb-3">
           <label class="form-label" for="loginEmail">Correo electrónico</label>
-          <input type="email" class="form-control" id="loginEmail" placeholder="tucorreo@ejemplo.com" required>
+          <input type="email" class="form-control" id="loginEmail" placeholder="tucorreo@ejemplo.com" maxlength="254" required>
           <div class="field-error">Ingresa un correo electrónico con formato válido.</div>
         </div>
 
         <div class="mb-2">
           <label class="form-label" for="loginPass">Contraseña</label>
           <div class="pass-wrap">
-            <input type="password" class="form-control" id="loginPass" placeholder="••••••••" required minlength="6">
+            <input type="password" class="form-control" id="loginPass" placeholder="••••••••" required minlength="6" maxlength="128">
             <button type="button" class="pass-toggle" data-target="loginPass">Mostrar</button>
-            <div class="field-error">La contraseña debe tener al menos 6 caracteres.</div>
+            <div class="field-error">La contraseña debe tener entre 6 y 128 caracteres.</div>
           </div>
         </div>
 
@@ -146,20 +146,20 @@
 
         <div class="mb-3">
           <label class="form-label" for="regName">Nombre completo</label>
-          <input type="text" class="form-control" id="regName" placeholder="Tu Nombre y Apellido" required>
-          <div class="field-error">Ingresa tu nombre completo (mínimo 3 letras).</div>
+          <input type="text" class="form-control" id="regName" placeholder="Tu Nombre y Apellido" required minlength="3" maxlength="80">
+          <div class="field-error">Ingresa tu nombre completo (3 a 80 caracteres y al menos 3 letras).</div>
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="regEmail">Correo electrónico</label>
-          <input type="email" class="form-control" id="regEmail" placeholder="tucorreo@ejemplo.com" required>
+          <input type="email" class="form-control" id="regEmail" placeholder="tucorreo@ejemplo.com" maxlength="254" required>
           <div class="field-error">Ingresa un correo válido (ej: usuario@dominio.com).</div>
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="regPhone">Teléfono</label>
-          <input type="tel" class="form-control" id="regPhone" placeholder="00000000 o +34 600..." required>
-          <div class="field-error">Ingresa un teléfono válido (al menos 8 dígitos).</div>
+          <input type="tel" class="form-control" id="regPhone" placeholder="00000000 o +34 600..." required maxlength="25">
+          <div class="field-error">Ingresa un teléfono válido (8 a 15 dígitos).</div>
         </div>
 
         <!-- Selección de Rol Requisito 5 -->
@@ -174,16 +174,16 @@
         <div class="mb-2">
           <label class="form-label" for="regPass">Contraseña</label>
           <div class="pass-wrap">
-            <input type="password" class="form-control" id="regPass" placeholder="Mínimo 6 caracteres" required minlength="6">
+            <input type="password" class="form-control" id="regPass" placeholder="6 a 128 caracteres" required minlength="6" maxlength="128">
             <button type="button" class="pass-toggle" data-target="regPass">Mostrar</button>
-            <div class="field-error">La contraseña debe tener al menos 6 caracteres.</div>
+            <div class="field-error">La contraseña debe tener entre 6 y 128 caracteres.</div>
           </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="regPass2">Confirmar contraseña</label>
           <div class="pass-wrap">
-            <input type="password" class="form-control" id="regPass2" placeholder="Repite tu contraseña" required>
+            <input type="password" class="form-control" id="regPass2" placeholder="Repite tu contraseña" required maxlength="128">
             <button type="button" class="pass-toggle" data-target="regPass2">Mostrar</button>
             <div class="field-error">Las contraseñas no coinciden.</div>
           </div>

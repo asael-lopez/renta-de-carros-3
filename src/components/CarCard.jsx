@@ -36,7 +36,7 @@ export const CarCard = ({ car }) => {
             html: `
         <div style="text-align: left; color: #ffffff; font-family: system-ui, sans-serif; padding: 4px;">
           <div style="display: flex; align-items: center; gap: 8px; color: #dc2626; font-size: 0.85rem; font-weight: bold;">
-            <span>🚗 SANTA LUCÍA ALQUILER</span>
+            <span>SANTA LUCÍA ALQUILER</span>
           </div>
           <h2 style="font-size: 1.5rem; margin: 6px 0 10px 0; color: #fff;">Realizar una Reserva</h2>
           <p style="color: #9ca3af; font-size: 0.85rem; margin-bottom: 18px;">
@@ -108,7 +108,7 @@ export const CarCard = ({ car }) => {
         </div>
       `,
             showCancelButton: true,
-            confirmButtonText: '📅 Confirmar Reserva',
+            confirmButtonText: 'Confirmar Reserva',
             cancelButtonText: 'Cancelar',
             confirmButtonColor: '#dc2626',
             cancelButtonColor: '#374151',
@@ -177,7 +177,7 @@ export const CarCard = ({ car }) => {
                 });
 
                 if (isOverlapping) {
-                    Swal.showValidationMessage('⚠️ El vehículo ya tiene una reserva activa en esas fechas. Elige un rango distinto.');
+                    Swal.showValidationMessage('El vehículo ya tiene una reserva activa en esas fechas. Elige un rango distinto.');
                     return false;
                 }
 
@@ -270,10 +270,10 @@ export const CarCard = ({ car }) => {
                         fontSize: '0.8rem',
                         color: '#a3a3a3'
                     }}>
-                        <span>👤 {car.pasajeros} Pasajeros</span>
-                        <span>💼 {car.maletas} Maleta(s)</span>
-                        <span>⚙️ {car.transmision}</span>
-                        <span>🚗 4 Puertas</span>
+                        <span>{car.pasajeros} Pasajeros</span>
+                        <span>{car.maletas} Maleta(s)</span>
+                        <span>{car.transmision}</span>
+                        <span>4 Puertas</span>
                     </div>
                 </div>
 

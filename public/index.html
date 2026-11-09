@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="pageTitle">Alquiler SantaLucía - Elige tu Vehículo</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -55,16 +56,16 @@
 
                 <!-- Enlaces principales -->
                 <ul class="nav-menu">
-                    <li><a href="/index.html" class="nav-link">Inicio</a></li>
-                    <li><a href="/?tab=fleet" class="nav-link">Nuestra Flota</a></li>
-                    <li><a href="/?tab=dashboard" class="nav-link">Panel de control</a></li>
-                    <li><a href="/?tab=reports" class="nav-link">Reportes</a></li>
+                    <li><a href="/index.html" class="nav-link" data-i18n="home">Inicio</a></li>
+                    <li><a href="/?tab=fleet" class="nav-link" data-i18n="ourFleet">Nuestra Flota</a></li>
+                    <li><a href="/?tab=dashboard" class="nav-link" data-i18n="dashboard">Panel de control</a></li>
+                    <li><a href="/?tab=reports" class="nav-link" data-i18n="reports">Reportes</a></li>
                 </ul>
 
-                <!-- Botón Mi Cuenta (destacado) — visible solo si NO hay sesión -->
-                <a href="login-registro.html" class="account-btn" id="accountBtn" data-i18n="myAccount">
-                    <i class="fas fa-user account-btn-icon"></i>
-                    <span>Mi Cuenta</span>
+                <!-- Botón administrativo del header -->
+                <a href="login-registro.html" class="account-btn" id="accountBtn">
+                    <span class="account-btn-icon"><i class="fas fa-user"></i></span>
+                    <span data-i18n="myAccount">Mi Cuenta</span>
                 </a>
 
                 <!-- Perfil usuario (visible solo SI hay sesión) -->
@@ -176,8 +177,8 @@
         <ul class="mobile-nav-menu">
             <li><a href="index.html" class="mobile-nav-link" aria-current="page" data-i18n="home">Inicio</a></li>
             <li><a href="/?tab=fleet" class="mobile-nav-link" data-i18n="ourFleet">Nuestra Flota</a></li>
-            <li><a href="/?tab=dashboard" class="mobile-nav-link">Panel de control</a></li>
-            <li><a href="/?tab=reports" class="mobile-nav-link">Reportes</a></li>
+                    <li><a href="/?tab=dashboard" class="mobile-nav-link" data-i18n="dashboard">Panel de control</a></li>
+                    <li><a href="/?tab=reports" class="mobile-nav-link" data-i18n="reports">Reportes</a></li>
             <li><a href="login-registro.html" class="mobile-nav-link mobile-nav-link-accent" data-i18n="myAccount">Mi Cuenta</a></li>
         </ul>
     </div>
@@ -186,8 +187,8 @@
     <section class="hero">
 
         <!-- Video de fondo -->
-        <video class="hero-video" autoplay muted loop playsinline poster="">
-            <source src="videos/kia.mp4" type="video/mp4">
+        <video class="hero-video" autoplay muted loop playsinline poster="/fotos/KIA2.jpg">
+            <source src="/kia.mp4" type="video/mp4">
             Tu navegador no soporta la etiqueta de video HTML5.
         </video>
 
@@ -258,6 +259,62 @@
                 </div>
             </article>
 
+        </div>
+    </section>
+
+    <!-- ========== MAPA / DÓNDE ENCONTRARNOS ========== -->
+    <section class="location-section" id="location">
+        <div class="location-container">
+            <div class="location-heading">
+                <span class="location-eyebrow" data-i18n="locationEyebrow">Nuestra ubicación</span>
+                <h2 data-i18n="locationHeading">Dónde encontrarnos</h2>
+                <p data-i18n="locationDescription">Encuentra nuestra sucursal y calcula la distancia desde tu dirección.</p>
+            </div>
+
+            <div class="location-layout">
+                <div class="location-map-column">
+                    <div
+                        id="locationMap"
+                        class="location-map"
+                        role="application"
+                        aria-label="Mapa de Alquiler SantaLucía"
+                    ></div>
+                    <p class="location-sample-note" data-i18n="locationSampleNote">
+                        Ubicación aproximada de ejemplo: centro de Soyapango. Se actualizará con las coordenadas reales de la sucursal.
+                    </p>
+                </div>
+
+                <div class="location-search-panel">
+                    <h3 data-i18n="locationSearchTitle">Calcula tu distancia</h3>
+                    <p data-i18n="locationSearchDescription">Busca una dirección en El Salvador para ver qué tan lejos estás de la sucursal.</p>
+                    <form id="locationSearchForm" class="location-search-form">
+                        <label for="locationSearchInput" data-i18n="locationSearchLabel">Escribe tu dirección</label>
+                        <div class="location-search-field">
+                            <input
+                                id="locationSearchInput"
+                                name="address"
+                                type="search"
+                                placeholder="Ej. Plaza Mundo, Soyapango"
+                                data-i18n-placeholder="locationSearchPlaceholder"
+                                autocomplete="street-address"
+                            >
+                            <button id="locationSearchButton" type="submit" data-i18n="locationSearchButton">Buscar</button>
+                        </div>
+                    </form>
+                    <p id="locationStatus" class="location-status" role="status" aria-live="polite"></p>
+                    <p id="locationDistance" class="location-distance" aria-live="polite" hidden></p>
+                    <a
+                        id="locationDirections"
+                        class="location-directions"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <i class="fas fa-route" aria-hidden="true"></i>
+                        <span data-i18n="locationDirections">Cómo llegar</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -361,6 +418,8 @@
 
     <script src="js/app-data.js"></script>
     <script src="js/script.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="js/mapa.js"></script>
 
 </body>
 </html>

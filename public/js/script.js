@@ -255,8 +255,20 @@ document.addEventListener('DOMContentLoaded', function () {
             workWithUs: "Trabaja con Nosotros",
             languages: "Idiomas",
             myAccount: "Mi Cuenta",
+            dashboard: "Panel de control",
+            reports: "Reportes",
             fleet: "FLOTA",
             chooseVehicle: "ELIGE TU VEHÍCULO",
+            locationEyebrow: "Nuestra ubicación",
+            locationHeading: "Dónde encontrarnos",
+            locationDescription: "Encuentra nuestra sucursal y calcula la distancia desde tu dirección.",
+            locationSampleNote: "Ubicación aproximada de ejemplo: centro de Soyapango. Se actualizará con las coordenadas reales de la sucursal.",
+            locationSearchTitle: "Calcula tu distancia",
+            locationSearchDescription: "Busca una dirección en El Salvador para ver qué tan lejos estás de la sucursal.",
+            locationSearchLabel: "Escribe tu dirección",
+            locationSearchPlaceholder: "Ej. Plaza Mundo, Soyapango",
+            locationSearchButton: "Buscar",
+            locationDirections: "Cómo llegar",
             rentalCars: "CARROS DE RENTA",
             availableFleet: "NUESTRA FLOTA DISPONIBLE",
             allVehicles: "Todos los Vehículos",
@@ -381,8 +393,20 @@ document.addEventListener('DOMContentLoaded', function () {
             workWithUs: "Work With Us",
             languages: "Languages",
             myAccount: "My Account",
+            dashboard: "Dashboard",
+            reports: "Reports",
             fleet: "FLEET",
             chooseVehicle: "CHOOSE YOUR VEHICLE",
+            locationEyebrow: "Our location",
+            locationHeading: "Where to find us",
+            locationDescription: "Find our branch and calculate the distance from your address.",
+            locationSampleNote: "Example approximate location: central Soyapango. This will be updated with the branch's actual coordinates.",
+            locationSearchTitle: "Calculate your distance",
+            locationSearchDescription: "Search for an address in El Salvador to see how far you are from our branch.",
+            locationSearchLabel: "Enter your address",
+            locationSearchPlaceholder: "e.g. Plaza Mundo, Soyapango",
+            locationSearchButton: "Search",
+            locationDirections: "Get directions",
             rentalCars: "RENTAL CARS",
             availableFleet: "OUR AVAILABLE FLEET",
             allVehicles: "All Vehicles",
@@ -497,7 +521,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Aplica el idioma elegido y lo guarda en localStorage
     function applyLanguage(lang) {
-        const dict = translations[lang] || translations.es;
+        const selectedLang = Object.prototype.hasOwnProperty.call(translations, lang) ? lang : 'es';
+        const dict = translations[selectedLang];
 
         const elements = document.querySelectorAll('[data-i18n]');
         elements.forEach(function (el) {
@@ -507,9 +532,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        document.documentElement.setAttribute('lang', lang);
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (dict[key] !== undefined) {
+                el.setAttribute('placeholder', dict[key]);
+            }
+        });
 
-        localStorage.setItem('preferredLang', lang);
+        document.documentElement.setAttribute('lang', selectedLang);
+        try {
+            localStorage.setItem('preferredLang', selectedLang);
+        } catch (error) {
+            // El idioma sigue aplicándose aunque el navegador bloquee el almacenamiento.
+        }
     }
 
     const langLinks = document.querySelectorAll('[data-lang]');
@@ -536,7 +571,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Idioma por defecto (recordado en localStorage)
-    const initialLang = localStorage.getItem('preferredLang') || 'es';
+    let initialLang = 'es';
+    try {
+        initialLang = localStorage.getItem('preferredLang') || 'es';
+    } catch (error) {
+        // Usa español como predeterminado si el navegador bloquea el almacenamiento.
+    }
     applyLanguage(initialLang);
 
     // ========== Login / Perfil de usuario (Requisitos 4, 6 y 9) ==========

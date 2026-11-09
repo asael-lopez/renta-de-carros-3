@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import Swal from 'sweetalert2';
+import { ClipboardList, RefreshCw, Star, Wallet } from 'lucide-react';
 
 export const Dashboard = () => {
     const {
@@ -158,7 +159,7 @@ export const Dashboard = () => {
               alignItems: 'center',
               gap: '8px'
           }}>
-            👤 ROL: {role}
+            ROL: {role}
           </span>
                     <button
                         onClick={toggleRole}
@@ -170,10 +171,14 @@ export const Dashboard = () => {
                             borderRadius: '6px',
                             cursor: 'pointer',
                             fontWeight: '600',
-                            fontSize: '0.85rem'
+                            fontSize: '0.85rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px'
                         }}
                     >
-                        🔄 Cambiar Rol
+                        <RefreshCw size={16} aria-hidden="true" />
+                        Cambiar Rol
                     </button>
                 </div>
             </div>
@@ -182,13 +187,13 @@ export const Dashboard = () => {
             {isAdmin && (
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
                     <button onClick={() => setActiveAdminTab('fleet')} style={tabBtnStyle(activeAdminTab === 'fleet')}>
-                        🚗 Gestión de Flota (CRUD)
+                        Gestión de Flota (CRUD)
                     </button>
                     <button onClick={() => setActiveAdminTab('reservations')} style={tabBtnStyle(activeAdminTab === 'reservations')}>
-                        📅 Gestión de Reservas (CRUD)
+                        Gestión de Reservas (CRUD)
                     </button>
                     <button onClick={() => setActiveAdminTab('maintenance')} style={tabBtnStyle(activeAdminTab === 'maintenance')}>
-                        🛠️ Mantenimiento ({inProgressMaintenancesCount})
+                        Mantenimiento ({inProgressMaintenancesCount})
                     </button>
                 </div>
             )}
@@ -196,22 +201,22 @@ export const Dashboard = () => {
             {/* Métricas Dinámicas Adaptativas (ADMIN vs CLIENTE) */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
                 <MetricCard
-                    icon="🚗"
+                    icon=""
                     label={isAdmin ? 'FLOTA TOTAL' : 'Vehículos Alquilados'}
                     value={isAdmin ? totalFleetCount : clientActiveCount}
                 />
                 <MetricCard
-                    icon="📅"
+                    icon=""
                     label={isAdmin ? 'RESERVAS TOTALES' : 'Reservas Activas'}
                     value={isAdmin ? totalReservationsCount : clientActiveCount}
                 />
                 <MetricCard
-                    icon="👛"
+                    icon={<Wallet size={20} aria-hidden="true" />}
                     label={isAdmin ? 'INGRESOS DEL MES' : 'Gasto Acumulado'}
                     value={isAdmin ? `$${totalIncome.toFixed(2)}` : `$${clientTotalSpent.toFixed(2)}`}
                 />
                 <MetricCard
-                    icon="📈"
+                    icon=""
                     label={isAdmin ? 'EFICIENCIA DE FLOTA' : 'Puntos Fidelidad'}
                     value={isAdmin ? `${efficiency}%` : `${clientPoints} pts`}
                 />
@@ -230,7 +235,7 @@ export const Dashboard = () => {
                             {activeAdminTab === 'fleet' && (
                                 <>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                        <h2 style={{ fontSize: '1.2rem', color: '#fff', margin: 0 }}>🚗 Catálogo y Flota de Vehículos</h2>
+                                        <h2 style={{ fontSize: '1.2rem', color: '#fff', margin: 0 }}>Catálogo y Flota de Vehículos</h2>
                                         <button onClick={openVehicleModal} style={primaryActionBtnStyle}>
                                             + Nuevo Vehículo
                                         </button>
@@ -279,7 +284,7 @@ export const Dashboard = () => {
                             {activeAdminTab === 'reservations' && (
                                 <>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                        <h2 style={{ fontSize: '1.2rem', color: '#fff', margin: 0 }}>📅 Control Global de Reservas</h2>
+                                        <h2 style={{ fontSize: '1.2rem', color: '#fff', margin: 0 }}>Control Global de Reservas</h2>
                                     </div>
                                     <table style={tableStyle}>
                                         <thead>
@@ -327,7 +332,7 @@ export const Dashboard = () => {
                             {activeAdminTab === 'maintenance' && (
                                 <>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                        <h2 style={{ fontSize: '1.2rem', color: '#fff', margin: 0 }}>🛠️ Historial de Mantenimientos</h2>
+                                        <h2 style={{ fontSize: '1.2rem', color: '#fff', margin: 0 }}>Historial de Mantenimientos</h2>
                                         <button onClick={openMaintenanceModal} style={primaryActionBtnStyle}>
                                             + Registrar Mantenimiento
                                         </button>
@@ -358,7 +363,7 @@ export const Dashboard = () => {
                                                 <td style={{ padding: '10px', textAlign: 'right' }}>
                                                     {m.estado === 'En curso' && (
                                                         <button onClick={() => completeMaintenance(m.id)} style={successBtnStyle}>
-                                                            ✅ Finalizar
+                                                            Finalizar
                                                         </button>
                                                     )}
                                                 </td>
@@ -372,7 +377,10 @@ export const Dashboard = () => {
                     ) : (
                         /* VISTA CLIENTE: MIS RESERVAS RECIENTES */
                         <>
-                            <h2 style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '16px' }}>📋 Mis Reservas Recientes</h2>
+                            <h2 style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <ClipboardList size={20} aria-hidden="true" />
+                                Mis Reservas Recientes
+                            </h2>
                             <table style={tableStyle}>
                                 <thead>
                                 <tr style={tableHeaderStyle}>
@@ -421,28 +429,31 @@ export const Dashboard = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{ background: '#121212', border: '1px solid #262626', borderRadius: '8px', padding: '16px' }}>
                         <h3 style={{ margin: '0 0 12px 0', color: '#dc2626', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            🔔 Notificaciones y Avisos
+                            Notificaciones y Avisos
                         </h3>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.8rem', color: '#ccc', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             {isAdmin ? (
                                 <>
                                     <li style={{ background: '#1a1a1a', padding: '10px', borderRadius: '6px', border: '1px solid #262626' }}>
-                                        <strong style={{ color: '#fff', display: 'block' }}>📈 Ocupación de Flota:</strong>
+                                        <strong style={{ color: '#fff', display: 'block' }}>Ocupación de Flota:</strong>
                                         {rentedCarsCount} de {totalFleetCount} vehículos alquilados ({efficiency}%).
                                     </li>
                                     <li style={{ background: '#1a1a1a', padding: '10px', borderRadius: '6px', border: '1px solid #262626' }}>
-                                        <strong style={{ color: '#fff', display: 'block' }}>🛠️ Estado Flota:</strong>
+                                        <strong style={{ color: '#fff', display: 'block' }}>Estado Flota:</strong>
                                         CRUD de vehículos y reservas sincronizado en tiempo real con localStorage.
                                     </li>
                                 </>
                             ) : (
                                 <>
                                     <li style={{ background: '#1a1a1a', padding: '10px', borderRadius: '6px', border: '1px solid #262626' }}>
-                                        <strong style={{ color: '#4ade80', display: 'block' }}>✅ Reserva Lista:</strong>
+                                        <strong style={{ color: '#4ade80', display: 'block' }}>Reserva Lista:</strong>
                                         Tus reservas activas se encuentran garantizadas.
                                     </li>
                                     <li style={{ background: '#1a1a1a', padding: '10px', borderRadius: '6px', border: '1px solid #262626' }}>
-                                        <strong style={{ color: '#fde047', display: 'block' }}>⭐ Puntos Acumulados:</strong>
+                                        <strong style={{ color: '#fde047', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <Star size={14} aria-hidden="true" />
+                                            Puntos Acumulados:
+                                        </strong>
                                         Tienes un total de <b>{clientPoints} puntos</b> para canjear en tus próximos viajes.
                                     </li>
                                 </>
@@ -451,11 +462,11 @@ export const Dashboard = () => {
                     </div>
 
                     <div style={{ background: '#121212', border: '1px solid #262626', borderRadius: '8px', padding: '16px' }}>
-                        <h3 style={{ margin: '0 0 8px 0', color: '#dc2626', fontSize: '0.95rem' }}>🛡️ Centro de Ayuda 24/7</h3>
+                        <h3 style={{ margin: '0 0 8px 0', color: '#dc2626', fontSize: '0.95rem' }}>Centro de Ayuda 24/7</h3>
                         <p style={{ fontSize: '0.75rem', color: '#a3a3a3', margin: '0 0 10px 0' }}>¿Tienes dudas sobre tu alquiler o asistencia en carretera?</p>
                         <div style={{ fontSize: '0.8rem', color: '#fff' }}>
-                            📞 +503 2200 1234<br />
-                            ✉️ soporte@santalucia.com
+                            +503 2200 1234<br />
+                            soporte@santalucia.com
                         </div>
                     </div>
                 </div>

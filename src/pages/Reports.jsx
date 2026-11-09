@@ -1,7 +1,7 @@
-import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { LockKeyhole } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -13,7 +13,9 @@ export const Reports = () => {
         return (
             <div style={{ maxWidth: '800px', margin: '60px auto', padding: '40px 24px', textAlign: 'center' }}>
                 <div style={{ background: '#121212', border: '1px solid #262626', borderRadius: '12px', padding: '48px 24px' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🔒</div>
+                    <div style={{ marginBottom: '16px', color: '#dc2626' }}>
+                        <LockKeyhole size={42} aria-hidden="true" />
+                    </div>
                     <h2 style={{ color: '#ffffff', fontSize: '1.8rem', fontWeight: 'bold', margin: '0 0 12px 0' }}>
                         Acceso Restringido
                     </h2>
@@ -99,7 +101,7 @@ export const Reports = () => {
 
             {/* Tabla Desglosada por Mes */}
             <div style={{ background: '#121212', border: '1px solid #262626', borderRadius: '8px', padding: '20px' }}>
-                <h3 style={{ margin: '0 0 16px 0', color: '#ffffff' }}>📊 Desglose Detallado por Mes</h3>
+                <h3 style={{ margin: '0 0 16px 0', color: '#ffffff' }}>Desglose Detallado por Mes</h3>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                     <thead>
                     <tr style={{ borderBottom: '1px solid #333', color: '#a3a3a3', textAlign: 'left' }}>

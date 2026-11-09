@@ -2,7 +2,7 @@
 // Santa Lucía Alquiler — Gestor Central de Datos (LocalStorage)
 // ========================================================
 
-const DataManager = (function () {
+window.DataManager = (function () {
     const STORAGE_KEY_FLEET = 'santalucia_flota';
     const STORAGE_KEY_USERS = 'usuarios_registrados';
     const STORAGE_KEY_RESERVATIONS = 'santalucia_reservas';

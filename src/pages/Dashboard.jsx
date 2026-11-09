@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { WeatherWidget } from '../components/WeatherWidget';
 import Swal from 'sweetalert2';
 
 export const Dashboard = () => {
@@ -176,6 +177,10 @@ export const Dashboard = () => {
                         🔄 Cambiar Rol
                     </button>
                 </div>
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+                <WeatherWidget />
             </div>
 
             {/* Pestañas de Gestión (Solo Visibles en ROL ADMIN) */}

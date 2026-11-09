@@ -1,11 +1,48 @@
+
 import React from 'react';
 import Swal from 'sweetalert2';
 import { useApp } from '../context/AppContext';
 
 export const CarCard = ({ car }) => {
-    const { cars, reservations, addReservation } = useApp();
+    const {
+        cars,
+        reservations,
+        addReservation,
+        savedVehicleIds,
+        toggleFavorite
+    } = useApp();
 
     const isMaintenance = car.status === 'En Mantenimiento';
+    const isFavorite = (savedVehicleIds || []).includes(String(car.id));
+
+    const handleToggleFavorite = () => {
+        const result = toggleFavorite(car.id);
+
+        if (!result?.ok) {
+            Swal.fire({
+                icon: 'error',
+                title: 'No se pudo actualizar',
+                text: result?.message || 'Ocurrió un error al guardar el favorito.',
+                background: '#121212',
+                color: '#ffffff',
+                confirmButtonColor: '#dc2626'
+            });
+            return;
+        }
+
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: result.saved
+                ? 'Añadido a favoritos'
+                : 'Eliminado de favoritos',
+            showConfirmButton: false,
+            timer: 1600,
+            background: '#181818',
+            color: '#ffffff'
+        });
+    };
 
     const handleOpenReservation = () => {
         if (isMaintenance) {
@@ -231,6 +268,34 @@ export const CarCard = ({ car }) => {
                     style={{ width: '100%', height: '210px', objectFit: 'cover' }}
                     onError={(e) => { e.target.src = '/fotos/1.jpg'; }}
                 />
+
+                {/* BOTÓN DE FAVORITOS */}
+                <button
+                    type="button"
+                    onClick={handleToggleFavorite}
+                    aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                    title={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                    style={{
+                        position: 'absolute',
+                        top: '12px',
+                        left: '12px',
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        background: 'rgba(0,0,0,0.75)',
+                        color: isFavorite ? '#ef4444' : '#ffffff',
+                        fontSize: '1.45rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s ease'
+                    }}
+                >
+                    {isFavorite ? '♥' : '♡'}
+                </button>
+
                 <span style={{
                     position: 'absolute',
                     top: '12px',
@@ -243,19 +308,50 @@ export const CarCard = ({ car }) => {
                     fontWeight: 'bold',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
                 }}>
-          {isMaintenance ? 'Mantenimiento' : 'Disponible'}
-        </span>
+                    {isMaintenance ? 'Mantenimiento' : 'Disponible'}
+                </span>
             </div>
 
-            <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{
+                padding: '20px',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+            }}>
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#ffffff', margin: 0 }}>{car.nombre}</h3>
-                        <span style={{ fontSize: '0.75rem', background: '#262626', color: '#a3a3a3', padding: '4px 10px', borderRadius: '6px', fontWeight: '600' }}>
-              {car.categoria}
-            </span>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '8px'
+                    }}>
+                        <h3 style={{
+                            fontSize: '1.25rem',
+                            fontWeight: 'bold',
+                            color: '#ffffff',
+                            margin: 0
+                        }}>
+                            {car.nombre}
+                        </h3>
+
+                        <span style={{
+                            fontSize: '0.75rem',
+                            background: '#262626',
+                            color: '#a3a3a3',
+                            padding: '4px 10px',
+                            borderRadius: '6px',
+                            fontWeight: '600'
+                        }}>
+                            {car.categoria}
+                        </span>
                     </div>
-                    <p style={{ fontSize: '0.8rem', color: '#737373', margin: '0 0 14px 0' }}>
+
+                    <p style={{
+                        fontSize: '0.8rem',
+                        color: '#737373',
+                        margin: '0 0 14px 0'
+                    }}>
                         {car.categoriaLabel || 'Auto Alquiler'}
                     </p>
 
@@ -277,16 +373,37 @@ export const CarCard = ({ car }) => {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '14px', borderTop: '1px solid #262626' }}>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: '20px',
+                    paddingTop: '14px',
+                    borderTop: '1px solid #262626'
+                }}>
                     <div>
-                        <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#dc2626' }}>${car.precioDia.toFixed(2)}</span>
-                        <span style={{ fontSize: '0.8rem', color: '#737373' }}> /día</span>
+                        <span style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '900',
+                            color: '#dc2626'
+                        }}>
+                            ${car.precioDia.toFixed(2)}
+                        </span>
+                        <span style={{
+                            fontSize: '0.8rem',
+                            color: '#737373'
+                        }}>
+                            {' '} /día
+                        </span>
                     </div>
+
                     <button
                         onClick={handleOpenReservation}
                         disabled={isMaintenance}
                         style={{
-                            background: isMaintenance ? '#404040' : 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                            background: isMaintenance
+                                ? '#404040'
+                                : 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
                             color: '#ffffff',
                             border: 'none',
                             padding: '10px 18px',
@@ -295,7 +412,9 @@ export const CarCard = ({ car }) => {
                             fontSize: '0.85rem',
                             cursor: isMaintenance ? 'not-allowed' : 'pointer',
                             opacity: isMaintenance ? 0.6 : 1,
-                            boxShadow: isMaintenance ? 'none' : '0 4px 12px rgba(220, 38, 38, 0.3)'
+                            boxShadow: isMaintenance
+                                ? 'none'
+                                : '0 4px 12px rgba(220, 38, 38, 0.3)'
                         }}
                     >
                         {isMaintenance ? 'En Taller' : 'Reservar Ahora'}
